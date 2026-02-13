@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-repo-documentation-to-include-a-complete-copy-pasteable-firebase-realtime-database-json-example-at-the-root-path-that-matches-the-canonical-telemetry-field-names-used-by-the-app-so-the-arduino-can-write-sensor-values-directly-into-those-fields",
-      "featureTitle": "Update the repo documentation to include a complete, copy-pasteable Firebase Realtime Database JSON example at the root path (`/`) that matches the canonical telemetry field names used by the app, so the Arduino can write sensor values directly into those fields.",
+      "featureId": "feature-update-the-dashboard-officer-messaging-card-to-support-sending-the-composed-alert-text-via-the-current-device-s-sms-application-using-an-sms-deep-link-while-preserving-the-existing-whatsapp-web-action-and-tel-calling-action",
+      "featureTitle": "Update the Dashboard \"Officer Messaging\" card to support sending the composed alert text via the current device’s SMS application using an `sms:` deep link, while preserving the existing WhatsApp Web action and tel: calling action.",
       "files": [
-        "frontend/FIREBASE_RTDB_FIELDS.md"
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+        "frontend/src/lib/sms.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -15,17 +16,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-32"
+        "REQ-42"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-small-admin-only-ui-action-in-the-web-app-to-initialize-bootstrap-the-firebase-realtime-database-root-telemetry-fields-with-default-placeholder-values-so-the-database-structure-exists-before-the-arduino-starts-writing-updates",
-      "featureTitle": "Add a small admin-only UI action in the web app to initialize (bootstrap) the Firebase Realtime Database root telemetry fields with default placeholder values, so the database structure exists before the Arduino starts writing updates.",
+      "featureId": "feature-add-a-send-sms-from-this-device-action-to-the-officers-directory-list-actions-for-each-officer-row-using-an-sms-deep-link-include-a-graceful-fallback-to-copying-the-message-payload-if-the-deep-link-cannot-be-opened",
+      "featureTitle": "Add a \"Send SMS from This Device\" action to the Officers Directory list actions for each officer row using an `sms:` deep link; include a graceful fallback to copying the message payload if the deep link cannot be opened.",
       "files": [
-        "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
-        "frontend/src/lib/telemetryBootstrap.ts",
-        "frontend/src/pages/Dashboard.tsx"
+        "frontend/src/components/officers/OfficerList.tsx",
+        "frontend/src/lib/sms.ts",
+        "frontend/src/pages/Officers.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -35,16 +36,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-33"
+        "REQ-43"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-the-firebase-bootstrap-action-and-documentation-explicitly-align-with-the-existing-telemetry-reader-behavior-the-app-listens-at-the-rtdb-root-and-supports-the-documented-aliases-for-arduino-writes",
-      "featureTitle": "Ensure the Firebase bootstrap action and documentation explicitly align with the existing telemetry reader behavior: the app listens at the RTDB root (`/`) and supports the documented aliases for Arduino writes.",
+      "featureId": "feature-ensure-user-facing-help-labels-clearly-distinguish-between-a-whatsapp-web-handoff-b-sms-via-the-user-s-current-device-sms-app-sms-link-and-c-calling-via-the-user-s-current-device-tel-link-without-implying-the-web-app-sends-sms-through-the-arduino-gsm-gprs-module",
+      "featureTitle": "Ensure user-facing help/labels clearly distinguish between (a) WhatsApp Web handoff, (b) SMS via the user’s current device SMS app (`sms:` link), and (c) calling via the user’s current device (`tel:` link), without implying the web app sends SMS through the Arduino GSM/GPRS module.",
       "files": [
-        "frontend/FIREBASE_RTDB_FIELDS.md",
-        "frontend/src/lib/telemetryBootstrap.ts"
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+        "frontend/src/components/officers/OfficerList.tsx",
+        "frontend/src/pages/Officers.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -54,7 +56,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-34"
+        "REQ-44"
       ],
       "confidence": "high"
     }

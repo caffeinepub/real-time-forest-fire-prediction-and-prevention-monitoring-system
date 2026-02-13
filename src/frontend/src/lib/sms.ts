@@ -5,7 +5,7 @@
  * @returns SMS deep link string
  */
 export function buildSmsLink(phoneNumber: string, message: string): string {
-  // Remove any non-numeric characters from phone number
+  // Remove any non-numeric characters except + from phone number
   const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
   
   // URL-encode the message body
@@ -38,4 +38,24 @@ export async function sendSms(phoneNumber: string, message: string): Promise<boo
     console.error('Failed to initiate SMS:', err);
     return false;
   }
+}
+
+/**
+ * Generates a default SMS message for officer contact from directory
+ * @param officerName - The officer's name
+ * @returns Default SMS message text
+ */
+export function generateDefaultSmsMessage(officerName: string): string {
+  return `Hello ${officerName},\n\nThis is a message from the Forest Fire Monitoring System.\n\nPlease respond at your earliest convenience.`;
+}
+
+/**
+ * Checks if SMS deep links are likely to work in the current environment
+ * @returns true if SMS links are likely supported, false otherwise
+ */
+export function isSmsSupported(): boolean {
+  // SMS links work on mobile devices and some desktop environments
+  // We can't reliably detect support, so we return true optimistically
+  // The UI will provide fallback copy functionality
+  return true;
 }

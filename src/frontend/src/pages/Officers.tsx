@@ -23,7 +23,7 @@ export default function Officers() {
         <div>
           <h1 className="mb-2 text-3xl font-bold">Officers Directory</h1>
           <p className="text-muted-foreground">
-            Manage contact information for emergency response officers
+            Manage contact information for emergency response officers. SMS and calls are initiated from your current device/browser via sms: and tel: links. WhatsApp actions open WhatsApp (Web/app) depending on your environment.
           </p>
         </div>
         <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">

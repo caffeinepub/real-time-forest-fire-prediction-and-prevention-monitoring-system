@@ -1,13 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Help admins and Arduino writers reliably initialize and write telemetry into Firebase Realtime Database by documenting the canonical root schema and adding an admin-only bootstrap action in the web app.
+**Goal:** Update the app’s contact email everywhere, and restore “send SMS from this device” deep-link actions alongside existing WhatsApp and phone-call actions with clear, accurate labels.
 
 **Planned changes:**
-- Add `frontend/FIREBASE_RTDB_FIELDS.md` with a complete, copy-pasteable JSON example for the RTDB root (`/`) containing the canonical telemetry fields: `temperature`, `windSpeed`, `humidity`, `soilMoisture`, `pirDetection`, `flameDetected`, `smokeLevel`, `latitude`, `longitude`.
-- Document that the app reads telemetry from the RTDB root path `/` at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`, and that Arduino should write sensor values directly to those root-level fields.
-- Document supported Arduino alias field names (e.g., `wind`, `earthMoisture`, `pir`, `flame`, `smoke`, `lat`/`lng`) and how they map to the canonical fields.
-- Add an admin-only dashboard (or similarly discoverable) UI action (with confirmation) labeled in English to initialize the RTDB root telemetry fields with default placeholder values, without deleting unrelated nodes (e.g., `/officers`).
-- Show clear success and error states in the UI for the initialization action, while preserving existing telemetry subscription behavior that reads from `/`.
+- Replace `arinfotech@gmail.com` with `arinfotech1993@gmail.com` across all frontend UI surfaces and repository documentation references.
+- On the Dashboard “Officer Messaging” card, add/restore an `sms:` deep-link action that opens the current device’s SMS app with the selected officer’s number and the composed message body, while keeping existing WhatsApp and `tel:` actions.
+- Add “Send SMS from This Device” to each officer row in the Officers Directory, using an `sms:` deep link to that officer’s mobile number.
+- Add inline fallback behavior for SMS deep-link failures on Dashboard and Officers screens: show a clear English error state and provide a one-click copy-to-clipboard for the message text.
+- Update help text/labels to clearly distinguish WhatsApp handoff vs SMS via `sms:` link vs calling via `tel:` link, and avoid implying SMS is sent via any Arduino GSM/GPRS module.
 
-**User-visible outcome:** Admins can initialize (bootstrap) the Firebase RTDB root telemetry fields from the web UI, and developers can copy a documented JSON schema to ensure Arduino writes match the app’s expected root-level telemetry fields and aliases.
+**User-visible outcome:** Users see the updated contact email, can initiate SMS and phone calls from their current device via `sms:`/`tel:` links, and can still hand off messaging to WhatsApp—each option clearly labeled with a copy-message fallback if SMS deep linking can’t be opened.

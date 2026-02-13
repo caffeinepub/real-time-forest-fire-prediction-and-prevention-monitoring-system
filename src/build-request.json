@@ -1,76 +1,92 @@
 {
   "kind": "build_request",
-  "title": "Add Firebase RTDB telemetry schema bootstrap for Arduino sensor writes",
+  "title": "Update contact email and re-enable device SMS deep link alongside WhatsApp and tel actions",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-32",
-      "text": "Update the repo documentation to include a complete, copy-pasteable Firebase Realtime Database JSON example at the root path (`/`) that matches the canonical telemetry field names used by the app, so the Arduino can write sensor values directly into those fields.",
+      "id": "REQ-41",
+      "text": "Replace the contact/credits email address `arinfotech@gmail.com` with `arinfotech1993@gmail.com` everywhere it is displayed or referenced in the frontend UI and repository documentation.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "recent-messages-4"
         ],
         "quotes": [
-          "create the database in the realtime firebase database so arduino only store the value to the field by the sensors"
+          "change the mail arinfotech@gmail.com to arinfotech1993@gmail.com"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/FIREBASE_RTDB_FIELDS.md` includes a valid JSON example showing the expected root object with these canonical fields: `temperature`, `windSpeed`, `humidity`, `soilMoisture`, `pirDetection`, `flameDetected`, `smokeLevel`, `latitude`, `longitude`.",
-        "The documentation clearly states that telemetry is read from the database root path `/` and each sensor value should be written directly at the root level.",
-        "The documentation preserves the exact database URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` and does not introduce any different endpoints or paths.",
-        "All documentation text is in English."
+        "Searching the repo for `arinfotech@gmail.com` returns zero matches.",
+        "Searching the repo for `arinfotech1993@gmail.com` returns at least one match in the intended contact/credits location(s).",
+        "All user-facing text remains in English."
       ]
     },
     {
-      "id": "REQ-33",
-      "text": "Add a small admin-only UI action in the web app to initialize (bootstrap) the Firebase Realtime Database root telemetry fields with default placeholder values, so the database structure exists before the Arduino starts writing updates.",
+      "id": "REQ-42",
+      "text": "Update the Dashboard \"Officer Messaging\" card to support sending the composed alert text via the current device’s SMS application using an `sms:` deep link, while preserving the existing WhatsApp Web action and tel: calling action.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "recent-messages-4"
         ],
         "quotes": [
-          "create the database in the realtime firebase database so arduino only store the value to the field by the sensors"
+          "so that sms and call from this device work smoothly. the sms send througn the web whatapp as well as from this device by mobile link"
         ]
       },
       "acceptanceCriteria": [
-        "The Dashboard (or another clearly discoverable admin-only location) provides an explicit action labeled in English (e.g., “Initialize Firebase Telemetry Fields”) that performs a write to the RTDB root (`/`) at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
-        "Triggering initialization writes an object containing the canonical fields at the root (even if values are `null`/defaults), without deleting unrelated existing nodes such as `/officers`.",
-        "The UI shows a clear success state when the initialization write succeeds and a clear error message when it fails (e.g., network error or permission denied).",
-        "The initialization action is guarded with a confirmation step to prevent accidental writes."
+        "When an officer is selected on the Dashboard, the messaging card shows an action that initiates an `sms:` deep link using the selected officer’s mobile number and the composed message body.",
+        "If the SMS deep link cannot be initiated or fails, the UI shows an inline actionable error state and provides a one-click way to copy the message text (clipboard).",
+        "The WhatsApp action continues to open a WhatsApp chat for the selected officer with the message prefilled.",
+        "The tel: action continues to initiate a phone call from the current device/browser (no implication of Arduino/GSM-module calling)."
       ]
     },
     {
-      "id": "REQ-34",
-      "text": "Ensure the Firebase bootstrap action and documentation explicitly align with the existing telemetry reader behavior: the app listens at the RTDB root (`/`) and supports the documented aliases for Arduino writes.",
+      "id": "REQ-43",
+      "text": "Add a \"Send SMS from This Device\" action to the Officers Directory list actions for each officer row using an `sms:` deep link; include a graceful fallback to copying the message payload if the deep link cannot be opened.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "recent-messages-4"
         ],
         "quotes": [
-          "create the database in the realtime firebase database so arduino only store the value to the field by the sensors"
+          "the sms send througn the web whatapp as well as from this device by mobile link"
         ]
       },
       "acceptanceCriteria": [
-        "Documentation reiterates the supported aliases for Arduino writes (e.g., `wind` for `windSpeed`, `earthMoisture` for `soilMoisture`, `pir` for `pirDetection`, `flame` for `flameDetected`, `smoke` for `smokeLevel`, `lat`/`lng` for `latitude`/`longitude`).",
-        "No changes break the existing telemetry subscription behavior that reads from `/` and treats missing/empty data as an empty state."
+        "Each officer row in the Officers list includes an action to initiate an `sms:` deep link to that officer’s mobile number.",
+        "If the SMS deep link cannot be initiated or fails, the UI provides a clear English error message and a one-click copy-to-clipboard option for the SMS text.",
+        "Existing WhatsApp Chat / WhatsApp Call handoff / Call from This Device / Copy Number actions continue to work."
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "Ensure user-facing help/labels clearly distinguish between (a) WhatsApp Web handoff, (b) SMS via the user’s current device SMS app (`sms:` link), and (c) calling via the user’s current device (`tel:` link), without implying the web app sends SMS through the Arduino GSM/GPRS module.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "so that sms and call from this device work smoothly. the sms send througn the web whatapp as well as from this device by mobile link"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dashboard and Officers screens contain clear English microcopy indicating SMS and calls are initiated from the user’s current device/browser via `sms:`/`tel:` links.",
+        "No UI copy implies that clicking web buttons will send SMS via the Arduino UNO GSM/GPRS module SIM.",
+        "WhatsApp labeling indicates it opens WhatsApp (Web/app) for the selected officer, depending on the environment and popup-blocker constraints."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under `frontend/src/components/ui` (read-only UI components).",
-    "Do not introduce any external databases or backend services; Firebase Realtime Database remains the persistence layer.",
+    "Frontend must not modify files under `frontend/src/components/ui` or any paths listed in `frontend.immutablePaths` in SYSTEM_CONTEXT.",
     "Keep all user-facing text in English.",
-    "Preserve the Firebase database URL exactly: `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
-    "Do not add backend (Motoko) dependencies for Firebase; initialization should be performed from the frontend using the existing Firebase REST/Web client approach."
+    "Backend remains single-actor Motoko architecture; do not introduce additional backend services.",
+    "Do not add any third-party SMS gateway integration; only use deep links (`sms:`/`tel:`) and WhatsApp Web handoff."
   ],
   "nonGoals": [
-    "Implementing Arduino firmware code or GSM/GPRS module code.",
-    "Changing the telemetry read path away from the root (`/`).",
-    "Adding new sensor fields beyond the existing documented telemetry fields.",
-    "Configuring Firebase security rules automatically (this requires Firebase Console access and is out of scope for this repo build)."
+    "Do not implement or claim true SMS delivery from the web app without user interaction (no background SMS sending).",
+    "Do not change Firebase RTDB schema or telemetry subscription behavior as part of this request.",
+    "Do not implement Arduino GSM-module SMS sending logic in the web app (Arduino-side SMS sending remains separate)."
   ],
   "imageRequirements": {
     "required": [],

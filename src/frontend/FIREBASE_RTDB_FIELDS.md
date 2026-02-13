@@ -34,9 +34,17 @@ You can manually create and populate the Firebase Realtime Database using the Fi
 
 **Note:** The frontend will recognize both the canonical name and any listed aliases. For example, you can write either `windSpeed` or `wind`, and the app will read it correctly.
 
-**Hardware Integration Note:** GPS coordinates (`latitude`/`longitude`) are expected to be written by the Arduino UNO GSM/GPRS module's GPS functionality. The same GSM/GPRS module (using SIM 9692162224) is responsible for sending outbound SMS alerts to officers. The web application only displays telemetry data and composes/copies alert message text; it does not send SMS directly from the browser.
+### Device Implementation Requirements
 
-### Complete Root Object Example
+**Arduino UNO Integration:**
 
-Below is a complete JSON example showing the expected root object structure at path `/`. Arduino devices should write each sensor value directly to these fields at the root level:
+The Arduino UNO device (with GSM/GPRS module using SIM 9692162224) is responsible for:
+
+1. **Writing telemetry to Firebase RTDB root path** (`/`) using the canonical field names listed above
+2. **Obtaining GPS coordinates** from the GSM/GPRS module's built-in GPS receiver and writing `latitude` and `longitude` fields
+3. **Sending SMS alerts** to officers via GSM AT commands when fire conditions are detected
+
+**REST API Write Method:**
+
+The Arduino device uses Firebase REST API with PATCH method to write telemetry:
 

@@ -1,69 +1,110 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Firebase RTDB telemetry root schema documentation + admin bootstrap action",
+  "title": "Update contact email and add device SMS deep links alongside WhatsApp and tel actions",
   "requirements": [
     {
-      "id": "REQ-32",
-      "summary": "Document a complete root-path (/) Firebase RTDB JSON example using the app’s canonical telemetry field names so Arduino can write directly to those fields.",
+      "id": "REQ-41",
+      "summary": "Replace the old contact/credits email with the updated email across frontend UI and documentation.",
       "acceptanceCriteria": [
-        "`frontend/FIREBASE_RTDB_FIELDS.md` includes a valid JSON example showing the expected root object with these canonical fields: `temperature`, `windSpeed`, `humidity`, `soilMoisture`, `pirDetection`, `flameDetected`, `smokeLevel`, `latitude`, `longitude`.",
-        "The documentation clearly states that telemetry is read from the database root path `/` and each sensor value should be written directly at the root level.",
-        "The documentation preserves the exact database URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` and does not introduce any different endpoints or paths.",
-        "All documentation text is in English."
+        "Searching the repo for `arinfotech@gmail.com` returns zero matches.",
+        "Searching the repo for `arinfotech1993@gmail.com` returns at least one match in the intended contact/credits location(s).",
+        "All user-facing text remains in English."
       ],
       "file_operations": [
         {
+          "path": "frontend/ARDUINO_DEVICE_INTEGRATION.md",
+          "operation": "modify",
+          "description": "Replace any occurrences of `arinfotech@gmail.com` with `arinfotech1993@gmail.com` and ensure surrounding documentation text remains English-only."
+        },
+        {
+          "path": "frontend/PWA_AND_LOCAL_RUN.md",
+          "operation": "modify",
+          "description": "Replace any occurrences of `arinfotech@gmail.com` with `arinfotech1993@gmail.com` and ensure surrounding documentation text remains English-only."
+        },
+        {
           "path": "frontend/FIREBASE_RTDB_FIELDS.md",
           "operation": "modify",
-          "description": "Add a complete copy-pasteable JSON example for the RTDB root object at `/` containing only the canonical telemetry fields (temperature, windSpeed, humidity, soilMoisture, pirDetection, flameDetected, smokeLevel, latitude, longitude) with placeholder defaults; explicitly state telemetry is read from `/` and Arduino should write each value directly at the root; preserve the exact Firebase database URL string and keep all text in English."
+          "description": "Replace any occurrences of `arinfotech@gmail.com` with `arinfotech1993@gmail.com` and ensure surrounding documentation text remains English-only."
+        },
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "modify",
+          "description": "If the contact/credits email is displayed in the UI footer or layout (or is added there elsewhere), update it to `arinfotech1993@gmail.com` and keep all UI copy in English. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-33",
-      "summary": "Add an admin-only UI action to initialize Firebase RTDB root telemetry fields with placeholder defaults without removing unrelated data, with confirmation and clear success/error states.",
+      "id": "REQ-42",
+      "summary": "Add an SMS (sms:) deep-link action to the Dashboard Officer Messaging card with inline fallback error + one-click copy, while keeping WhatsApp and tel actions unchanged.",
       "acceptanceCriteria": [
-        "The Dashboard (or another clearly discoverable admin-only location) provides an explicit action labeled in English (e.g., “Initialize Firebase Telemetry Fields”) that performs a write to the RTDB root (`/`) at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
-        "Triggering initialization writes an object containing the canonical fields at the root (even if values are `null`/defaults), without deleting unrelated existing nodes such as `/officers`.",
-        "The UI shows a clear success state when the initialization write succeeds and a clear error message when it fails (e.g., network error or permission denied).",
-        "The initialization action is guarded with a confirmation step to prevent accidental writes."
+        "When an officer is selected on the Dashboard, the messaging card shows an action that initiates an `sms:` deep link using the selected officer’s mobile number and the composed message body.",
+        "If the SMS deep link cannot be initiated or fails, the UI shows an inline actionable error state and provides a one-click way to copy the message text (clipboard).",
+        "The WhatsApp action continues to open a WhatsApp chat for the selected officer with the message prefilled.",
+        "The tel: action continues to initiate a phone call from the current device/browser (no implication of Arduino/GSM-module calling)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/telemetryBootstrap.ts",
-          "operation": "create",
-          "description": "Implement a frontend-only Firebase RTDB bootstrap helper that writes/merges the canonical telemetry fields to the database root (`/`) at the exact URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` using a non-destructive merge write (so unrelated nodes like `/officers` remain intact); surface success/failure via resolved/rejected promises and human-readable errors."
-        },
-        {
-          "path": "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
-          "operation": "create",
-          "description": "Create an admin-only UI component that renders an English-labeled action (e.g., “Initialize Firebase Telemetry Fields”) with a confirmation step (e.g., modal or browser confirm), triggers the root bootstrap write, and displays a clear success state and clear error message state; use shadcn-ui components (e.g., Button/Alert/Card patterns already used in the app) for consistent styling. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
+          "path": "frontend/src/lib/sms.ts",
           "operation": "modify",
-          "description": "Wire the new admin bootstrap action into a clearly discoverable location on the Dashboard (admin-only area meaning only visible to authenticated/admin session), ensuring the click triggers a non-destructive root initialization write and that success/error UI states are visible on the page; keep all user-facing text in English."
+          "description": "Harden SMS deep-link construction and initiation behavior to support a reliable boolean success/failure signal where possible (e.g., environment heuristics) so the UI can show a graceful fallback state when SMS links are unlikely to work."
+        },
+        {
+          "path": "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+          "operation": "modify",
+          "description": "Add a \"Send SMS from This Device\" action that uses the sms deep link with selected officer number + composed message body; add inline error UI with a one-click copy-to-clipboard action when SMS initiation fails/unavailable; preserve existing WhatsApp chat handoff and tel: call action; use shadcn-ui Alert/Button patterns already present for inline states and actions. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-34",
-      "summary": "Ensure documentation and bootstrap action match current telemetry reader behavior (root subscription at /, alias support, and empty-state behavior when data is missing).",
+      "id": "REQ-43",
+      "summary": "Add an SMS (sms:) deep-link action to each Officers Directory row with fallback to copying an SMS text payload, without breaking existing actions.",
       "acceptanceCriteria": [
-        "Documentation reiterates the supported aliases for Arduino writes (e.g., `wind` for `windSpeed`, `earthMoisture` for `soilMoisture`, `pir` for `pirDetection`, `flame` for `flameDetected`, `smoke` for `smokeLevel`, `lat`/`lng` for `latitude`/`longitude`).",
-        "No changes break the existing telemetry subscription behavior that reads from `/` and treats missing/empty data as an empty state."
+        "Each officer row in the Officers list includes an action to initiate an `sms:` deep link to that officer’s mobile number.",
+        "If the SMS deep link cannot be initiated or fails, the UI provides a clear English error message and a one-click copy-to-clipboard option for the SMS text.",
+        "Existing WhatsApp Chat / WhatsApp Call handoff / Call from This Device / Copy Number actions continue to work."
       ],
       "file_operations": [
         {
-          "path": "frontend/FIREBASE_RTDB_FIELDS.md",
+          "path": "frontend/src/lib/sms.ts",
           "operation": "modify",
-          "description": "Reinforce alignment with the app’s telemetry reader: explicitly state the app listens at the RTDB root (`/`), reiterate the supported Arduino alias field names, and document that missing/empty root data results in an empty/no-live-data state; preserve the exact Firebase database URL and keep all text in English."
+          "description": "Add/adjust a small helper to provide a consistent default SMS message payload for directory-initiated SMS actions (used when there is no composed dashboard message context), and reuse the same initiation logic as the dashboard."
         },
         {
-          "path": "frontend/src/lib/telemetryBootstrap.ts",
+          "path": "frontend/src/components/officers/OfficerList.tsx",
           "operation": "modify",
-          "description": "Ensure the bootstrap payload matches the telemetry reader expectations: write only the canonical root fields that the app parses (and do not introduce additional sensor fields), so that post-bootstrap the app continues to treat missing/empty values as an empty/placeholder state without breaking the existing subscription behavior."
+          "description": "Add a \"Send SMS from This Device\" action per officer (e.g., in the row actions menu) using the sms deep link; on failure/unavailable show a clear English error (toast and/or inline menu feedback) and provide a one-click copy-to-clipboard option for the SMS text payload; keep existing WhatsApp chat/call, tel:, and copy-number actions working as-is; use shadcn-ui DropdownMenu/Button conventions already in use. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Officers.tsx",
+          "operation": "modify",
+          "description": "Ensure the Officers Directory page wiring still presents the updated row actions (no orphaned UI) and any additional helper text added for SMS behavior remains English-only. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Update help/labels to clearly distinguish WhatsApp handoff vs SMS via device vs calling via device, and avoid implying the web app sends SMS via the Arduino GSM/GPRS module.",
+      "acceptanceCriteria": [
+        "Dashboard and Officers screens contain clear English microcopy indicating SMS and calls are initiated from the user’s current device/browser via `sms:`/`tel:` links.",
+        "No UI copy implies that clicking web buttons will send SMS via the Arduino UNO GSM/GPRS module SIM.",
+        "WhatsApp labeling indicates it opens WhatsApp (Web/app) for the selected officer, depending on the environment and popup-blocker constraints."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+          "operation": "modify",
+          "description": "Replace the current Arduino-SMS-implication alert microcopy with clear English text that distinguishes: (a) WhatsApp opens WhatsApp Web/app, (b) SMS opens the user's device SMS app via `sms:` link, (c) Call uses `tel:` link; ensure the copy does not claim the web app sends SMS via Arduino GSM/GPRS module. Use shadcn-ui Alert component already present. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/officers/OfficerList.tsx",
+          "operation": "modify",
+          "description": "Update action labels and/or supporting text to clearly differentiate WhatsApp handoff vs SMS via `sms:` vs calling via `tel:` (e.g., menu item labels like \"Open WhatsApp Chat (handoff)\" / \"Send SMS from This Device\" / \"Call from This Device\"), and ensure no wording implies Arduino GSM/GPRS module SMS sending. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Officers.tsx",
+          "operation": "modify",
+          "description": "Update the Officers Directory page subtitle/help text to clearly state that SMS and calls are initiated from the user's current device/browser via `sms:`/`tel:` links, and that WhatsApp actions open WhatsApp (Web/app) subject to environment/popup blocker behavior; keep all text in English. Verify the component's usage instructions before implementing."
         }
       ]
     }

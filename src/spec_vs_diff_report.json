@@ -1,50 +1,47 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T17:40:06.326Z",
-  "summary": "REQ-33 is largely implemented via a new Dashboard-visible bootstrap card + a PATCH-based RTDB root initializer. REQ-32 documentation is added/updated but the diff excerpt does not show the required complete copy-pasteable root JSON example (file appears truncated at that point). REQ-34 alias alignment appears documented, and telemetry read-from-root behavior is reiterated in docs; no evidence of changes that would break the existing root subscription.",
+  "generatedAt": "2026-02-13T18:36:27.285Z",
+  "summary": "Diff adds an SMS deep-link helper (sms:) and wires SMS actions into the Dashboard officer messaging composer and Officers directory list, plus adds microcopy clarifying sms:/tel:/WhatsApp behavior on the Officers page. However, the requested contact email replacement is not evidenced, and the SMS failure/fallback UX appears incomplete because the SMS helper always resolves success, making the specified failure/error flows effectively unreachable.",
   "missing_requirements": [
     {
-      "id": "REQ-32",
-      "requirement": "Provide a complete, copy-pasteable Firebase RTDB root (`/`) JSON example containing the canonical telemetry fields (temperature, windSpeed, humidity, soilMoisture, pirDetection, flameDetected, smokeLevel, latitude, longitude).",
-      "reason": "The documentation file is shown ending right after “Complete Root Object Example” and an opening code fence, but the actual JSON example content is not present in the provided diff excerpt, so the acceptance criterion cannot be verified as implemented.",
+      "id": "REQ-41",
+      "requirement": "Replace the contact/credits email address `arinfotech@gmail.com` with `arinfotech1993@gmail.com` everywhere it is displayed or referenced in the frontend UI and repository documentation.",
+      "reason": "No diff evidence shows any email string replacement in UI or documentation; none of the modified file excerpts include either email address.",
       "evidence": [
-        "frontend/FIREBASE_RTDB_FIELDS.md (ends right after the opening ``` for the JSON example in the diff summary)"
+        "frontend-file-summaries.txt",
+        "frontend/src/pages/Officers.tsx",
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+        "frontend/src/components/officers/OfficerList.tsx"
       ]
     },
     {
-      "id": "REQ-33",
-      "requirement": "Bootstrap UI action is admin-only (explicitly guarded/limited to admins).",
-      "reason": "The action is conditionally shown when telemetry is empty (`isEmpty`) but there is no evidence of an admin-only/authorization guard in the provided diff excerpt beyond that empty-state condition.",
+      "id": "REQ-42",
+      "requirement": "If the SMS deep link cannot be initiated or fails, the Dashboard UI shows an inline actionable error state and provides a one-click way to copy the message text (clipboard).",
+      "reason": "`sendSms` navigates to the `sms:` link and then always resolves `true` after a delay, so the composer’s `if (!success) { ... }` branch (inline error/copy fallback) is unlikely to ever run except on a thrown exception. This makes the specified failure/error handling effectively not implementable as written.",
       "evidence": [
-        "frontend/src/pages/Dashboard.tsx (shows `<FirebaseTelemetryBootstrapAction />` gated by `isEmpty` only)"
+        "frontend/src/lib/sms.ts",
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx"
       ]
     },
     {
-      "id": "REQ-33",
-      "requirement": "Bootstrap action performs a write to the RTDB root (`/`) at the exact database URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
-      "reason": "The initializer uses `firebaseConfig.databaseURL` to form `${firebaseConfig.databaseURL}/.json`, but the diff excerpt does not show the value of `firebaseConfig.databaseURL`, so preserving/using the exact required URL cannot be confirmed from the diff summary alone.",
+      "id": "REQ-43",
+      "requirement": "If the SMS deep link cannot be initiated or fails, the Officers Directory list UI provides a clear English error message and a one-click copy-to-clipboard option for the SMS text.",
+      "reason": "OfficerList does implement a failure path, but it depends on `sendSms` returning `false`. Since `sendSms` always resolves `true` after setting `window.location.href`, the fallback error/copy-to-clipboard flow is effectively unreachable in normal use.",
       "evidence": [
-        "frontend/src/lib/telemetryBootstrap.ts (uses `firebaseConfig.databaseURL` to build the request URL)"
+        "frontend/src/lib/sms.ts",
+        "frontend/src/components/officers/OfficerList.tsx"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Added documentation text about Arduino UNO GSM/GPRS module GPS and SMS responsibilities including a specific SIM number (9692162224).",
-      "reason": "Not requested by REQ-32/33/34; the requirements only asked for RTDB field schema, root-path behavior, aliases, and a bootstrap action.",
-      "evidence": [
-        "frontend/FIREBASE_RTDB_FIELDS.md (section: “Hardware Integration Note” mentioning SIM 9692162224 and SMS behavior)"
-      ]
-    }
-  ],
-  "confidence": 0.64,
+  "hallucinated_features": [],
+  "confidence": 0.74,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/FIREBASE_RTDB_FIELDS.md",
-    "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
-    "frontend/src/lib/telemetryBootstrap.ts",
-    "frontend/src/pages/Dashboard.tsx",
+    "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+    "frontend/src/components/officers/OfficerList.tsx",
+    "frontend/src/lib/sms.ts",
+    "frontend/src/pages/Officers.tsx",
     "project_state.json"
   ]
 }

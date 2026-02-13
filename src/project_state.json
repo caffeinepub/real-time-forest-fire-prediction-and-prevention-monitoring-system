@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 19,
+  "projectStateVersion": 27,
   "summary": "Web app for a real-time forest-fire prediction and prevention monitoring system using Firebase Realtime Database (currently empty/null) with dashboards, maps, reports, officer messaging, and admin login flow.",
   "architectural_notes": [
     "Firebase Realtime Database as the real-time data source; must handle empty/null database state gracefully (no data yet).",
@@ -11,11 +11,14 @@
     "Provide a clear, user-facing list of Firebase Realtime Database paths/fields so the database can be created manually in Firebase Console to match the app’s expected schema.",
     "Consider desktop distribution: decide whether to wrap the web app in a desktop shell (e.g., Electron/Tauri) and define build/packaging targets for a Windows .exe.",
     "SMS sending is handled by the Arduino UNO GSM/GPRS module using its attached SIM (9692162224); the same GSM/GPRS module also provides GPS location data used by the app.",
-    "Create/initialize the Firebase RTDB schema in Firebase Console with explicit sensor field paths so the Arduino writes values directly to the expected fields (no complex transformation layer)."
+    "Create/initialize the Firebase RTDB schema in Firebase Console with explicit sensor field paths so the Arduino writes values directly to the expected fields (no complex transformation layer).",
+    "Support WhatsApp Web deep links (wa.me / https://web.whatsapp.com/send?phone=...&text=...) for officer contact actions; calling via WhatsApp Web may be unsupported/inconsistent so UI must handle fallbacks (copy message/number)."
   ],
   "known_issues": [
     "Firebase Realtime Database currently contains null/no data; UI should support empty-state displays and simulated/demo data if needed.",
-    "Add Officer form may incorrectly fail for valid officer name/mobile input and/or Firebase write errors; needs validation + error handling fixes."
+    "Add Officer form may incorrectly fail for valid officer name/mobile input and/or Firebase write errors; needs validation + error handling fixes.",
+    "Officer Messaging UI expectation mismatch: user expects \"Send SMS\" and \"Call Officer\" buttons to send SMS/make calls via the Arduino GSM/GPRS module SIM, but the web app cannot directly trigger the GSM module; UX needs to align with actual capability (copyable payload / tel: link only, or document separate GSM-module-side workflow).",
+    "Messaging requirements may conflict: prior scope states the web app should not send SMS (Arduino GSM module handles SMS), but user requests SMS via device sms: link and via WhatsApp Web; needs reconciliation to avoid inconsistent UX."
   ],
   "isFixRequest": false,
   "existing_features": [
@@ -282,6 +285,78 @@
         "REQ-34"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-dashboard-officer-messaging-card-ui-so-it-does-not-imply-that-clicking-buttons-will-send-an-sms-or-place-a-call-via-the-arduino-uno-gsm-gprs-module-sim-instead-make-it-explicit-in-english-that-the-web-app-can-only-a-compose-copy-the-alert-payload-and-b-optionally-initiate-a-phone-call-from-the-user-s-current-device-browser-via-a-tel-link",
+      "title": "Update the Dashboard \"Officer Messaging\" card UI so it does not imply that clicking buttons will send an SMS or place a call via the Arduino UNO GSM/GPRS module SIM; instead, make it explicit (in English) that the web app can only (a) compose/copy the alert payload and (b) optionally initiate a phone call from the user’s current device/browser via a tel: link.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-officers-list-call-action-labeling-help-text-so-it-does-not-imply-calling-via-the-gsm-module-sim-it-must-be-clear-the-tel-link-uses-the-user-s-current-device-browser-and-provide-a-copy-to-clipboard-option-for-the-officer-s-phone-number-to-support-workflows-where-calls-are-made-outside-the-web-app",
+      "title": "Update the Officers list \"Call\" action labeling/help text so it does not imply calling via the GSM module SIM; it must be clear the tel: link uses the user’s current device/browser, and provide a copy-to-clipboard option for the officer’s phone number to support workflows where calls are made outside the web app.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-complete-arduino-uno-sketch-to-the-repository-that-1-reads-the-required-sensors-temperature-wind-speed-humidity-soil-moisture-pir-human-detection-flame-detection-mq2-smoke-level-2-obtains-gps-latitude-longitude-via-the-gsm-gprs-module-3-uploads-telemetry-values-to-firebase-realtime-database-using-the-rest-api-at-https-forest-fire-iot-new-default-rtdb-asia-southeast1-firebasedatabase-app-by-writing-the-canonical-telemetry-fields-at-the-root-path-and-4-sends-sms-alerts-via-the-gsm-gprs-module-using-sim-number-9692162224-when-thresholds-indicate-warning-critical-conditions",
+      "title": "Add a complete Arduino UNO sketch to the repository that (1) reads the required sensors (temperature, wind speed, humidity, soil moisture, PIR human detection, flame detection, MQ2 smoke level), (2) obtains GPS latitude/longitude via the GSM/GPRS module, (3) uploads telemetry values to Firebase Realtime Database using the REST API at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` by writing the canonical telemetry fields at the root path (`/`), and (4) sends SMS alerts via the GSM/GPRS module using SIM number `9692162224` when thresholds indicate warning/critical conditions.",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-whatsapp-web-contact-action-in-the-dashboard-officer-messaging-card-so-an-admin-can-open-a-whatsapp-chat-to-the-selected-officer-s-mobile-number-using-the-active-whatsapp-web-session-with-the-composed-alert-message-prefilled-when-supported",
+      "title": "Add a WhatsApp Web contact action in the Dashboard Officer Messaging card so an admin can open a WhatsApp chat to the selected officer’s mobile number using the active WhatsApp Web session, with the composed alert message prefilled when supported.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-whatsapp-web-contact-actions-to-the-officers-directory-list-so-each-officer-row-supports-1-open-whatsapp-chat-for-the-officer-s-number-and-2-a-whatsapp-call-handoff-that-opens-whatsapp-chat-and-instructs-the-user-to-start-a-whatsapp-voice-call-from-within-whatsapp-since-direct-whatsapp-call-deep-links-are-not-reliably-supported",
+      "title": "Add WhatsApp Web contact actions to the Officers Directory list so each officer row supports: (1) open WhatsApp chat for the officer’s number, and (2) a WhatsApp call handoff that opens WhatsApp chat and instructs the user to start a WhatsApp voice call from within WhatsApp (since direct WhatsApp-call deep links are not reliably supported).",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-small-reusable-utility-for-building-whatsapp-web-deep-links-chat-optional-prefilled-text-and-use-it-from-both-the-dashboard-officer-messaging-component-and-the-officers-list-actions-to-ensure-consistent-behavior",
+      "title": "Implement a small reusable utility for building WhatsApp Web deep links (chat + optional prefilled text) and use it from both the Dashboard Officer Messaging component and the Officers list actions to ensure consistent behavior.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dashboard-officer-messaging-card-to-support-sending-the-composed-alert-text-via-the-current-device-s-sms-application-using-an-sms-deep-link-while-preserving-the-existing-whatsapp-web-action-and-tel-calling-action",
+      "title": "Update the Dashboard \"Officer Messaging\" card to support sending the composed alert text via the current device’s SMS application using an `sms:` deep link, while preserving the existing WhatsApp Web action and tel: calling action.",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-send-sms-from-this-device-action-to-the-officers-directory-list-actions-for-each-officer-row-using-an-sms-deep-link-include-a-graceful-fallback-to-copying-the-message-payload-if-the-deep-link-cannot-be-opened",
+      "title": "Add a \"Send SMS from This Device\" action to the Officers Directory list actions for each officer row using an `sms:` deep link; include a graceful fallback to copying the message payload if the deep link cannot be opened.",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-user-facing-help-labels-clearly-distinguish-between-a-whatsapp-web-handoff-b-sms-via-the-user-s-current-device-sms-app-sms-link-and-c-calling-via-the-user-s-current-device-tel-link-without-implying-the-web-app-sends-sms-through-the-arduino-gsm-gprs-module",
+      "title": "Ensure user-facing help/labels clearly distinguish between (a) WhatsApp Web handoff, (b) SMS via the user’s current device SMS app (`sms:` link), and (c) calling via the user’s current device (`tel:` link), without implying the web app sends SMS through the Arduino GSM/GPRS module.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -387,6 +462,38 @@
       "id": "AR-17",
       "summary": "Define and create the Firebase Realtime Database structure/schema (paths + fields) so the Arduino can write sensor values directly into the correct fields",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Provide complete Arduino UNO code for the forest-fire IoT setup (sensor reads + GSM/GPRS SMS sending + GPS telemetry upload to Firebase RTDB) aligned to the app’s expected Firebase schema/paths",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Add Officer contact actions via WhatsApp Web: open a WhatsApp chat to the selected officer’s number (and optionally prefill the alert message) using the active WhatsApp Web session; also provide a WhatsApp-based call option if supported/available",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Update app contact/credits email from arinfotech@gmail.com to arinfotech1993@gmail.com wherever displayed/used",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Support sending officer alert text via both WhatsApp Web message deep link and device sms: link (plus tel: calling) so SMS/call can be initiated from the current device",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Replace the contact/credits email address `arinfotech@gmail.com` with `arinfotech1993@gmail.com` everywhere it is displayed or referenced in the frontend UI and repository documentation.",
+      "reqIds": [
+        "REQ-41"
+      ],
       "status": "pending"
     }
   ],
