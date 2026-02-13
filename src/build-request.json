@@ -1,0 +1,89 @@
+{
+  "kind": "build_request",
+  "title": "Add Firebase RTDB telemetry schema bootstrap for Arduino sensor writes",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-32",
+      "text": "Update the repo documentation to include a complete, copy-pasteable Firebase Realtime Database JSON example at the root path (`/`) that matches the canonical telemetry field names used by the app, so the Arduino can write sensor values directly into those fields.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "create the database in the realtime firebase database so arduino only store the value to the field by the sensors"
+        ]
+      },
+      "acceptanceCriteria": [
+        "`frontend/FIREBASE_RTDB_FIELDS.md` includes a valid JSON example showing the expected root object with these canonical fields: `temperature`, `windSpeed`, `humidity`, `soilMoisture`, `pirDetection`, `flameDetected`, `smokeLevel`, `latitude`, `longitude`.",
+        "The documentation clearly states that telemetry is read from the database root path `/` and each sensor value should be written directly at the root level.",
+        "The documentation preserves the exact database URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` and does not introduce any different endpoints or paths.",
+        "All documentation text is in English."
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "text": "Add a small admin-only UI action in the web app to initialize (bootstrap) the Firebase Realtime Database root telemetry fields with default placeholder values, so the database structure exists before the Arduino starts writing updates.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "create the database in the realtime firebase database so arduino only store the value to the field by the sensors"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Dashboard (or another clearly discoverable admin-only location) provides an explicit action labeled in English (e.g., “Initialize Firebase Telemetry Fields”) that performs a write to the RTDB root (`/`) at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
+        "Triggering initialization writes an object containing the canonical fields at the root (even if values are `null`/defaults), without deleting unrelated existing nodes such as `/officers`.",
+        "The UI shows a clear success state when the initialization write succeeds and a clear error message when it fails (e.g., network error or permission denied).",
+        "The initialization action is guarded with a confirmation step to prevent accidental writes."
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "text": "Ensure the Firebase bootstrap action and documentation explicitly align with the existing telemetry reader behavior: the app listens at the RTDB root (`/`) and supports the documented aliases for Arduino writes.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "create the database in the realtime firebase database so arduino only store the value to the field by the sensors"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Documentation reiterates the supported aliases for Arduino writes (e.g., `wind` for `windSpeed`, `earthMoisture` for `soilMoisture`, `pir` for `pirDetection`, `flame` for `flameDetected`, `smoke` for `smokeLevel`, `lat`/`lng` for `latitude`/`longitude`).",
+        "No changes break the existing telemetry subscription behavior that reads from `/` and treats missing/empty data as an empty state."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under `frontend/src/components/ui` (read-only UI components).",
+    "Do not introduce any external databases or backend services; Firebase Realtime Database remains the persistence layer.",
+    "Keep all user-facing text in English.",
+    "Preserve the Firebase database URL exactly: `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
+    "Do not add backend (Motoko) dependencies for Firebase; initialization should be performed from the frontend using the existing Firebase REST/Web client approach."
+  ],
+  "nonGoals": [
+    "Implementing Arduino firmware code or GSM/GPRS module code.",
+    "Changing the telemetry read path away from the root (`/`).",
+    "Adding new sensor fields beyond the existing documented telemetry fields.",
+    "Configuring Firebase security rules automatically (this requires Firebase Console access and is out of scope for this repo build)."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

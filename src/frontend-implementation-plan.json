@@ -1,0 +1,71 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Firebase RTDB telemetry root schema documentation + admin bootstrap action",
+  "requirements": [
+    {
+      "id": "REQ-32",
+      "summary": "Document a complete root-path (/) Firebase RTDB JSON example using the app’s canonical telemetry field names so Arduino can write directly to those fields.",
+      "acceptanceCriteria": [
+        "`frontend/FIREBASE_RTDB_FIELDS.md` includes a valid JSON example showing the expected root object with these canonical fields: `temperature`, `windSpeed`, `humidity`, `soilMoisture`, `pirDetection`, `flameDetected`, `smokeLevel`, `latitude`, `longitude`.",
+        "The documentation clearly states that telemetry is read from the database root path `/` and each sensor value should be written directly at the root level.",
+        "The documentation preserves the exact database URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` and does not introduce any different endpoints or paths.",
+        "All documentation text is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/FIREBASE_RTDB_FIELDS.md",
+          "operation": "modify",
+          "description": "Add a complete copy-pasteable JSON example for the RTDB root object at `/` containing only the canonical telemetry fields (temperature, windSpeed, humidity, soilMoisture, pirDetection, flameDetected, smokeLevel, latitude, longitude) with placeholder defaults; explicitly state telemetry is read from `/` and Arduino should write each value directly at the root; preserve the exact Firebase database URL string and keep all text in English."
+        }
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "summary": "Add an admin-only UI action to initialize Firebase RTDB root telemetry fields with placeholder defaults without removing unrelated data, with confirmation and clear success/error states.",
+      "acceptanceCriteria": [
+        "The Dashboard (or another clearly discoverable admin-only location) provides an explicit action labeled in English (e.g., “Initialize Firebase Telemetry Fields”) that performs a write to the RTDB root (`/`) at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
+        "Triggering initialization writes an object containing the canonical fields at the root (even if values are `null`/defaults), without deleting unrelated existing nodes such as `/officers`.",
+        "The UI shows a clear success state when the initialization write succeeds and a clear error message when it fails (e.g., network error or permission denied).",
+        "The initialization action is guarded with a confirmation step to prevent accidental writes."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/telemetryBootstrap.ts",
+          "operation": "create",
+          "description": "Implement a frontend-only Firebase RTDB bootstrap helper that writes/merges the canonical telemetry fields to the database root (`/`) at the exact URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` using a non-destructive merge write (so unrelated nodes like `/officers` remain intact); surface success/failure via resolved/rejected promises and human-readable errors."
+        },
+        {
+          "path": "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
+          "operation": "create",
+          "description": "Create an admin-only UI component that renders an English-labeled action (e.g., “Initialize Firebase Telemetry Fields”) with a confirmation step (e.g., modal or browser confirm), triggers the root bootstrap write, and displays a clear success state and clear error message state; use shadcn-ui components (e.g., Button/Alert/Card patterns already used in the app) for consistent styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Dashboard.tsx",
+          "operation": "modify",
+          "description": "Wire the new admin bootstrap action into a clearly discoverable location on the Dashboard (admin-only area meaning only visible to authenticated/admin session), ensuring the click triggers a non-destructive root initialization write and that success/error UI states are visible on the page; keep all user-facing text in English."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Ensure documentation and bootstrap action match current telemetry reader behavior (root subscription at /, alias support, and empty-state behavior when data is missing).",
+      "acceptanceCriteria": [
+        "Documentation reiterates the supported aliases for Arduino writes (e.g., `wind` for `windSpeed`, `earthMoisture` for `soilMoisture`, `pir` for `pirDetection`, `flame` for `flameDetected`, `smoke` for `smokeLevel`, `lat`/`lng` for `latitude`/`longitude`).",
+        "No changes break the existing telemetry subscription behavior that reads from `/` and treats missing/empty data as an empty state."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/FIREBASE_RTDB_FIELDS.md",
+          "operation": "modify",
+          "description": "Reinforce alignment with the app’s telemetry reader: explicitly state the app listens at the RTDB root (`/`), reiterate the supported Arduino alias field names, and document that missing/empty root data results in an empty/no-live-data state; preserve the exact Firebase database URL and keep all text in English."
+        },
+        {
+          "path": "frontend/src/lib/telemetryBootstrap.ts",
+          "operation": "modify",
+          "description": "Ensure the bootstrap payload matches the telemetry reader expectations: write only the canonical root fields that the app parses (and do not introduce additional sensor fields), so that post-bootstrap the app continues to treat missing/empty values as an empty/placeholder state without breaking the existing subscription behavior."
+        }
+      ]
+    }
+  ]
+}

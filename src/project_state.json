@@ -1,0 +1,397 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 19,
+  "summary": "Web app for a real-time forest-fire prediction and prevention monitoring system using Firebase Realtime Database (currently empty/null) with dashboards, maps, reports, officer messaging, and admin login flow.",
+  "architectural_notes": [
+    "Firebase Realtime Database as the real-time data source; must handle empty/null database state gracefully (no data yet).",
+    "Sensor inputs expected: temperature, wind, humidity, soil moisture, PIR (human-only intent), flame sensor, MQ2 smoke; GPS lat/long stored for mapping.",
+    "Login uses static Admin credentials plus rotating captcha on each load/attempt.",
+    "Persist Officers (name, mobile number) to Firebase Realtime Database with CRUD operations; officer messaging reads from this Firebase-backed directory.",
+    "Document and standardize the Firebase Realtime Database schema (paths/field names) for sensors, GPS, alerts, and officers; frontend should subscribe to these paths so values appear automatically when data is later created.",
+    "Provide a clear, user-facing list of Firebase Realtime Database paths/fields so the database can be created manually in Firebase Console to match the app’s expected schema.",
+    "Consider desktop distribution: decide whether to wrap the web app in a desktop shell (e.g., Electron/Tauri) and define build/packaging targets for a Windows .exe.",
+    "SMS sending is handled by the Arduino UNO GSM/GPRS module using its attached SIM (9692162224); the same GSM/GPRS module also provides GPS location data used by the app.",
+    "Create/initialize the Firebase RTDB schema in Firebase Console with explicit sensor field paths so the Arduino writes values directly to the expected fields (no complex transformation layer)."
+  ],
+  "known_issues": [
+    "Firebase Realtime Database currently contains null/no data; UI should support empty-state displays and simulated/demo data if needed.",
+    "Add Officer form may incorrectly fail for valid officer name/mobile input and/or Firebase write errors; needs validation + error handling fixes."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-app-navigation-and-routing-for-these-screens-splash-login-main-dashboard-map-reports-officers-with-a-logout-action-that-returns-to-login",
+      "title": "Create app navigation and routing for these screens: Splash, Login, Main Dashboard, Map, Reports, Officers, with a Logout action that returns to Login.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-splash-screen-with-a-short-timed-transition-to-login-and-branded-visuals-appropriate-for-a-forest-fire-monitoring-system",
+      "title": "Implement a Splash screen with a short timed transition to Login and branded visuals appropriate for a forest-fire monitoring system.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-login-screen-that-authenticates-using-fixed-credentials-user-id-admin-password-project-123-and-includes-a-captcha-that-changes-every-time-it-is-shown-refreshed",
+      "title": "Implement a Login screen that authenticates using fixed credentials (User Id: Admin, Password: Project@123) and includes a captcha that changes every time it is shown/refreshed.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-connect-the-main-dashboard-to-the-provided-firebase-realtime-database-and-subscribe-to-live-updates-for-sensor-readings-and-gps-coordinates-while-handling-the-current-null-no-data-state-with-clear-empty-states-and-optional-demo-simulated-data-toggle-for-ui-preview",
+      "title": "Connect the Main Dashboard to the provided Firebase Realtime Database and subscribe to live updates for sensor readings and GPS coordinates, while handling the current 'null/no data' state with clear empty states and optional demo/simulated data toggle for UI preview.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-and-display-the-sensor-data-model-for-temperature-sensor-wind-sensor-humidity-sensor-earth-soil-moisture-sensor-pir-sensor-human-detection-only-flame-sensor-smoke-mq2-sensor-and-gps-latitude-longitude-include-derived-statuses-for-prediction-and-prevention-alerts",
+      "title": "Define and display the sensor data model for: temperature sensor, wind sensor, humidity sensor, earth/soil moisture sensor, PIR sensor (human detection only), flame sensor, smoke MQ2 sensor, and GPS latitude/longitude; include derived statuses for prediction and prevention alerts.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-main-dashboard-screen-with-real-time-alert-panels-and-well-designed-data-visualizations-including-at-least-a-line-graph-for-time-series-trends-a-pie-chart-for-status-distribution-e-g-safe-warning-alert-and-summary-cards-include-motion-animation-for-critical-alerts",
+      "title": "Build a Main Dashboard screen with real-time alert panels and well-designed data visualizations including at least: a line graph for time-series trends, a pie chart for status distribution (e.g., safe/warning/alert), and summary cards; include motion/animation for critical alerts.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-an-in-app-messaging-facility-on-the-dashboard-to-notify-related-officers-about-warnings-alerts-using-an-officer-directory-name-mobile-number-and-producing-a-message-payload-that-can-be-copied-to-clipboard-and-or-opened-via-a-tel-link-no-external-sms-gateway-integration",
+      "title": "Implement an in-app messaging facility on the Dashboard to notify related officers about warnings/alerts, using an officer directory (name + mobile number) and producing a message payload that can be copied to clipboard and/or opened via a tel: link (no external SMS gateway integration).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-dedicated-officers-screen-that-lists-officers-with-their-mobile-numbers-and-supports-adding-editing-and-removing-officers-admin-only-same-local-login-session-and-integrates-with-the-messaging-facility",
+      "title": "Create a dedicated Officers screen that lists officers with their mobile numbers and supports adding, editing, and removing officers (Admin-only, same local login session) and integrates with the messaging facility.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-map-screen-that-displays-a-satellite-style-map-and-marks-the-latest-gps-coordinates-from-firebase-latitude-longitude-including-a-fallback-when-coordinates-are-missing-and-a-control-to-copy-coordinates",
+      "title": "Implement a Map screen that displays a satellite-style map and marks the latest GPS coordinates from Firebase (latitude/longitude), including a fallback when coordinates are missing and a control to copy coordinates.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-reports-screen-that-provides-monthly-and-yearly-reporting-views-from-available-firebase-time-series-data-or-demo-data-when-empty-including-at-least-one-aggregated-chart-and-a-simple-tabular-summary",
+      "title": "Create a Reports screen that provides monthly and yearly reporting views from available Firebase time-series data (or demo data when empty), including at least one aggregated chart and a simple tabular summary.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-coherent-modern-visual-theme-suitable-for-an-emergency-monitoring-dashboard-avoid-blue-purple-with-well-developed-colors-relevant-imagery-and-subtle-animations-keep-all-user-facing-text-in-english",
+      "title": "Apply a coherent, modern visual theme suitable for an emergency monitoring dashboard (avoid blue/purple) with well-developed colors, relevant imagery, and subtle animations; keep all user-facing text in English.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-image-assets-required-for-the-theme-logo-hero-background-and-key-sensor-alert-illustrations-and-render-them-from-frontend-static-assets-no-backend-image-routing",
+      "title": "Add generated static image assets required for the theme (logo/hero/background and key sensor/alert illustrations) and render them from frontend static assets (no backend image routing).",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dashboard-officer-messaging-component-so-that-when-an-officer-is-selected-and-the-user-clicks-a-new-send-message-button-the-app-triggers-the-device-s-messaging-app-to-send-the-composed-alert-text-to-the-selected-officer-s-mobile-number-using-an-sms-link-with-a-prefilled-body-url-encoded",
+      "title": "Update the Dashboard Officer Messaging component so that when an officer is selected and the user clicks a new \"Send Message\" button, the app triggers the device’s messaging app to send the composed alert text to the selected officer’s mobile number using an sms: link with a prefilled body (URL-encoded).",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-graceful-fallback-for-environments-browsers-where-sms-links-are-not-supported-after-clicking-send-message-if-navigation-to-the-sms-link-cannot-be-initiated-show-an-inline-error-message-and-provide-a-one-click-way-to-copy-the-message-to-clipboard",
+      "title": "Add a graceful fallback for environments/browsers where sms: links are not supported: after clicking \"Send Message\", if navigation to the sms: link cannot be initiated, show an inline error message and provide a one-click way to copy the message to clipboard.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-firebase-realtime-database-persistence-for-the-officers-directory-so-that-officer-name-and-mobile-number-are-stored-and-retrieved-from-the-firebase-database-at-https-forest-fire-iot-new-default-rtdb-asia-southeast1-firebasedatabase-app-instead-of-the-motoko-canister-actor-apis",
+      "title": "Implement Firebase Realtime Database persistence for the Officers directory so that officer name and mobile number are stored and retrieved from the Firebase database at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` instead of the Motoko canister actor APIs.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-add-officer-flow-so-valid-inputs-like-name-anurag-hota-and-mobile-number-9090948112-are-accepted-and-saved-successfully-including-improved-validation-feedback-when-saving-fails-e-g-show-whether-the-failure-is-a-validation-issue-or-a-firebase-write-error",
+      "title": "Fix the Add Officer flow so valid inputs like name \"Anurag Hota\" and mobile number \"9090948112\" are accepted and saved successfully, including improved validation feedback when saving fails (e.g., show whether the failure is a validation issue or a Firebase write error).",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-officer-data-model-used-by-the-frontend-to-support-stable-firebase-keys-ids-for-update-and-delete-operations-do-not-rely-on-officer-name-as-the-only-identifier-and-update-officers-list-and-officer-messaging-selector-to-work-with-the-updated-model",
+      "title": "Update the officer data model used by the frontend to support stable Firebase keys/IDs for update and delete operations (do not rely on officer name as the only identifier), and update Officers list and Officer Messaging selector to work with the updated model.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-current-mock-firebase-realtime-database-implementation-in-frontend-src-lib-firebase-ts-with-a-real-firebase-web-sdk-setup-that-connects-to-the-existing-firebase-project-using-the-already-defined-config-values-apikey-authdomain-databaseurl-projectid-storagebucket-messagingsenderid-appid-while-preserving-a-graceful-fallback-behavior-when-firebase-cannot-be-initialized-e-g-missing-sdk-runtime-error",
+      "title": "Replace the current mock Firebase Realtime Database implementation in `frontend/src/lib/firebase.ts` with a real Firebase Web SDK setup that connects to the existing Firebase project using the already-defined config values (apiKey/authDomain/databaseURL/projectId/storageBucket/messagingSenderId/appId), while preserving a graceful fallback behavior when Firebase cannot be initialized (e.g., missing SDK, runtime error).",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-frontend-src-hooks-usetelemetry-ts-subscribes-to-the-firebase-realtime-database-such-that-when-the-rtdb-root-data-becomes-available-i-e-the-database-is-created-and-values-are-written-later-the-ui-automatically-receives-and-reflects-updates-without-requiring-a-page-refresh",
+      "title": "Ensure `frontend/src/hooks/useTelemetry.ts` subscribes to the Firebase Realtime Database such that when the RTDB root data becomes available (i.e., the database is created and values are written later), the UI automatically receives and reflects updates without requiring a page refresh.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-concise-developer-facing-documentation-file-in-the-repo-that-lists-the-exact-firebase-realtime-database-paths-and-field-names-expected-by-the-app-for-smooth-connection-including-the-recommended-canonical-names-and-the-currently-supported-aliases-already-parsed-by-the-telemetry-hook",
+      "title": "Add a concise developer-facing documentation file in the repo that lists the exact Firebase Realtime Database paths and field names expected by the app for smooth connection, including the recommended canonical names and the currently-supported aliases already parsed by the telemetry hook.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-officers-add-new-officer-flow-so-that-valid-inputs-e-g-name-manas-ranjan-seth-and-mobile-number-8249022664-as-shown-in-the-screenshot-are-saved-successfully-and-immediately-appear-in-the-officers-list",
+      "title": "Fix the Officers \"Add New Officer\" flow so that valid inputs (e.g., name \"MANAS RANJAN SETH\" and mobile number \"8249022664\" as shown in the screenshot) are saved successfully and immediately appear in the Officers list.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-officers-crud-list-add-edit-delete-uses-firebase-realtime-database-at-https-forest-fire-iot-new-default-rtdb-asia-southeast1-firebasedatabase-app-as-the-persistence-layer-for-officers-and-does-not-rely-on-motoko-canister-actor-admin-checks-for-these-operations",
+      "title": "Ensure Officers CRUD (list/add/edit/delete) uses Firebase Realtime Database at `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app` as the persistence layer for officers, and does not rely on Motoko canister actor admin checks for these operations.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-improve-the-add-edit-officer-dialog-error-handling-so-that-when-saving-fails-the-ui-displays-an-actionable-error-message-that-distinguishes-between-a-validation-errors-and-b-firebase-write-permission-network-errors",
+      "title": "Improve the Add/Edit Officer dialog error handling so that when saving fails, the UI displays an actionable error message that distinguishes between (a) validation errors and (b) Firebase write/permission/network errors.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-developer-facing-firebase-rtdb-documentation-so-a-user-can-manually-create-the-required-database-structure-in-firebase-realtime-database-including-the-exact-paths-and-field-names-and-any-currently-supported-aliases-that-the-frontend-reads-writes",
+      "title": "Update the developer-facing Firebase RTDB documentation so a user can manually create the required database structure in Firebase Realtime Database, including the exact paths and field names (and any currently-supported aliases) that the frontend reads/writes.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-modify-the-splash-screen-so-it-shows-creator-company-assistance-credits-below-the-main-title-and-add-a-visible-start-button-that-navigates-to-the-login-screen",
+      "title": "Modify the Splash screen so it shows creator/company/assistance credits below the main title, and add a visible \"Start\" button that navigates to the Login screen.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-progressive-web-app-pwa-installability-so-the-deployed-web-app-can-be-installed-on-a-windows-laptop-as-a-desktop-app-from-the-browser-chrome-edge-without-requiring-a-native-exe-build",
+      "title": "Add Progressive Web App (PWA) installability so the deployed web app can be installed on a Windows laptop as a desktop app from the browser (Chrome/Edge) without requiring a native .exe build.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-provide-required-static-icon-assets-for-the-pwa-manifest-and-ensure-they-are-served-from-frontend-static-assets-no-backend-image-routing",
+      "title": "Provide required static icon assets for the PWA manifest and ensure they are served from frontend static assets (no backend image routing).",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-developer-user-facing-documentation-file-that-explains-1-how-to-run-the-project-locally-on-a-laptop-and-2-how-to-install-the-app-on-windows-as-a-desktop-app-via-the-browser-pwa-install-flow-explicitly-clarify-the-limitation-that-this-project-is-delivered-as-a-web-app-and-does-not-produce-a-native-exe-within-this-platform",
+      "title": "Add a developer/user-facing documentation file that explains (1) how to run the project locally on a laptop and (2) how to install the app on Windows as a desktop app via the browser PWA install flow; explicitly clarify the limitation that this project is delivered as a web app and does not produce a native .exe within this platform.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dashboard-officer-messaging-ui-so-it-no-longer-attempts-to-send-an-sms-from-the-web-app-no-sms-deep-link-sending-instead-present-the-composed-alert-text-as-a-copyable-payload-and-clearly-indicate-in-english-that-sms-delivery-is-performed-by-the-arduino-uno-gsm-gprs-module-using-sim-number-9692162224",
+      "title": "Update the Dashboard \"Officer Messaging\" UI so it no longer attempts to send an SMS from the web app (no sms: deep link sending). Instead, present the composed alert text as a copyable payload and clearly indicate (in English) that SMS delivery is performed by the Arduino UNO GSM/GPRS module using SIM number 9692162224.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-repo-documentation-to-reflect-that-gps-coordinates-come-from-the-gsm-gprs-module-and-that-sms-sending-is-performed-by-the-arduino-uno-gsm-gprs-module-with-sim-number-9692162224-while-the-web-app-only-displays-telemetry-and-composes-copies-the-alert-message-text",
+      "title": "Update repo documentation to reflect that GPS coordinates come from the GSM/GPRS module and that SMS sending is performed by the Arduino UNO GSM/GPRS module with SIM number 9692162224, while the web app only displays telemetry and composes/copies the alert message text.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-repo-documentation-to-include-a-complete-copy-pasteable-firebase-realtime-database-json-example-at-the-root-path-that-matches-the-canonical-telemetry-field-names-used-by-the-app-so-the-arduino-can-write-sensor-values-directly-into-those-fields",
+      "title": "Update the repo documentation to include a complete, copy-pasteable Firebase Realtime Database JSON example at the root path (`/`) that matches the canonical telemetry field names used by the app, so the Arduino can write sensor values directly into those fields.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-small-admin-only-ui-action-in-the-web-app-to-initialize-bootstrap-the-firebase-realtime-database-root-telemetry-fields-with-default-placeholder-values-so-the-database-structure-exists-before-the-arduino-starts-writing-updates",
+      "title": "Add a small admin-only UI action in the web app to initialize (bootstrap) the Firebase Realtime Database root telemetry fields with default placeholder values, so the database structure exists before the Arduino starts writing updates.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-firebase-bootstrap-action-and-documentation-explicitly-align-with-the-existing-telemetry-reader-behavior-the-app-listens-at-the-rtdb-root-and-supports-the-documented-aliases-for-arduino-writes",
+      "title": "Ensure the Firebase bootstrap action and documentation explicitly align with the existing telemetry reader behavior: the app listens at the RTDB root (`/`) and supports the documented aliases for Arduino writes.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Implement Splash screen UI for the forest fire monitoring system web app",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Implement Login screen with fixed Admin credentials (User Id: Admin, Password: Project@123) and a captcha that changes every time",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Implement Main Dashboard screen that reads real-time data from Firebase Realtime Database and shows alerts plus graphs (pie/line/charts) and messaging to related officers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Implement Map screen showing satellite map location using latitude/longitude from Firebase (GPS via GSM/GPRS module)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Implement Reports screen with monthly and yearly reporting views",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Implement Officer list screen with mobile numbers and ability to send messages about forest fire incidents",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add Logout button/flow from Main Dashboard back to Login screen",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Define and display sensor data model from Firebase (temperature, wind, humidity, soil moisture, PIR human detection, flame sensor, smoke MQ2) including handling when database has no data",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Officer messaging: when an officer is selected and the Send button is clicked, send/trigger the message to the officer’s mobile number (e.g., via tel:/sms link or other supported method)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Store Officer directory (name + mobile number) in Firebase Realtime Database and support add/edit/remove officers with Firebase persistence (instead of only local state)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Fix Add Officer flow failing with valid inputs (e.g., name 'Anurag Hota', mobile '9090948112'); review validation and Firebase write errors to ensure officers can be saved successfully",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Provide Firebase Realtime Database connection package with automatic live subscription (reads values as soon as DB/data exists) plus a clear list of required database field/path names for smooth integration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Update the frontend dependency setup so the Firebase Web SDK is installed and bundled as part of the project build (no reliance on loading Firebase via a CDN script).",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Update Splash screen to include creator/company/assistance credits text and add a Start button that navigates to the Login screen",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Package the app as a Windows .exe (desktop installer/executable) for running locally on a laptop",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Update officer alert/messaging requirements to reflect that SMS sending is performed by the Arduino UNO GSM/GPRS module (SIM 9692162224), not by the web app; align app UX/docs accordingly",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Define and create the Firebase Realtime Database structure/schema (paths + fields) so the Arduino can write sensor values directly into the correct fields",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Real-time Forest Fire Prediction and Prevention Monitoring System",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

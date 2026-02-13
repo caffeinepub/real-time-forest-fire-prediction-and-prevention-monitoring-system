@@ -1,0 +1,68 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-13T17:40:06.330Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 3,
+    "items": [
+      {
+        "id": "REQ-32",
+        "summary": "Update the repo documentation to include a complete, copy-pasteable Firebase Realtime Database JSON example at the root path (`/`) that matches the canonical telemetry field names used by the app, so the Arduino can write sensor values directly into those fields.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/FIREBASE_RTDB_FIELDS.md"
+        ],
+        "matchedFiles": [
+          "frontend/FIREBASE_RTDB_FIELDS.md"
+        ]
+      },
+      {
+        "id": "REQ-33",
+        "summary": "Add a small admin-only UI action in the web app to initialize (bootstrap) the Firebase Realtime Database root telemetry fields with default placeholder values, so the database structure exists before the Arduino starts writing updates.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/lib/telemetryBootstrap.ts",
+          "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
+          "frontend/src/pages/Dashboard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/telemetryBootstrap.ts",
+          "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
+          "frontend/src/pages/Dashboard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-34",
+        "summary": "Ensure the Firebase bootstrap action and documentation explicitly align with the existing telemetry reader behavior: the app listens at the RTDB root (`/`) and supports the documented aliases for Arduino writes.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/FIREBASE_RTDB_FIELDS.md",
+          "frontend/src/lib/telemetryBootstrap.ts"
+        ],
+        "matchedFiles": [
+          "frontend/FIREBASE_RTDB_FIELDS.md",
+          "frontend/src/lib/telemetryBootstrap.ts"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/FIREBASE_RTDB_FIELDS.md",
+    "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
+    "frontend/src/lib/telemetryBootstrap.ts",
+    "frontend/src/pages/Dashboard.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

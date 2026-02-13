@@ -1,0 +1,62 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-update-the-repo-documentation-to-include-a-complete-copy-pasteable-firebase-realtime-database-json-example-at-the-root-path-that-matches-the-canonical-telemetry-field-names-used-by-the-app-so-the-arduino-can-write-sensor-values-directly-into-those-fields",
+      "featureTitle": "Update the repo documentation to include a complete, copy-pasteable Firebase Realtime Database JSON example at the root path (`/`) that matches the canonical telemetry field names used by the app, so the Arduino can write sensor values directly into those fields.",
+      "files": [
+        "frontend/FIREBASE_RTDB_FIELDS.md"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-32"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-small-admin-only-ui-action-in-the-web-app-to-initialize-bootstrap-the-firebase-realtime-database-root-telemetry-fields-with-default-placeholder-values-so-the-database-structure-exists-before-the-arduino-starts-writing-updates",
+      "featureTitle": "Add a small admin-only UI action in the web app to initialize (bootstrap) the Firebase Realtime Database root telemetry fields with default placeholder values, so the database structure exists before the Arduino starts writing updates.",
+      "files": [
+        "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
+        "frontend/src/lib/telemetryBootstrap.ts",
+        "frontend/src/pages/Dashboard.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-33"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-the-firebase-bootstrap-action-and-documentation-explicitly-align-with-the-existing-telemetry-reader-behavior-the-app-listens-at-the-rtdb-root-and-supports-the-documented-aliases-for-arduino-writes",
+      "featureTitle": "Ensure the Firebase bootstrap action and documentation explicitly align with the existing telemetry reader behavior: the app listens at the RTDB root (`/`) and supports the documented aliases for Arduino writes.",
+      "files": [
+        "frontend/FIREBASE_RTDB_FIELDS.md",
+        "frontend/src/lib/telemetryBootstrap.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-34"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

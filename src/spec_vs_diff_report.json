@@ -1,0 +1,50 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-13T17:40:06.326Z",
+  "summary": "REQ-33 is largely implemented via a new Dashboard-visible bootstrap card + a PATCH-based RTDB root initializer. REQ-32 documentation is added/updated but the diff excerpt does not show the required complete copy-pasteable root JSON example (file appears truncated at that point). REQ-34 alias alignment appears documented, and telemetry read-from-root behavior is reiterated in docs; no evidence of changes that would break the existing root subscription.",
+  "missing_requirements": [
+    {
+      "id": "REQ-32",
+      "requirement": "Provide a complete, copy-pasteable Firebase RTDB root (`/`) JSON example containing the canonical telemetry fields (temperature, windSpeed, humidity, soilMoisture, pirDetection, flameDetected, smokeLevel, latitude, longitude).",
+      "reason": "The documentation file is shown ending right after “Complete Root Object Example” and an opening code fence, but the actual JSON example content is not present in the provided diff excerpt, so the acceptance criterion cannot be verified as implemented.",
+      "evidence": [
+        "frontend/FIREBASE_RTDB_FIELDS.md (ends right after the opening ``` for the JSON example in the diff summary)"
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "requirement": "Bootstrap UI action is admin-only (explicitly guarded/limited to admins).",
+      "reason": "The action is conditionally shown when telemetry is empty (`isEmpty`) but there is no evidence of an admin-only/authorization guard in the provided diff excerpt beyond that empty-state condition.",
+      "evidence": [
+        "frontend/src/pages/Dashboard.tsx (shows `<FirebaseTelemetryBootstrapAction />` gated by `isEmpty` only)"
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "requirement": "Bootstrap action performs a write to the RTDB root (`/`) at the exact database URL `https://forest-fire-iot-new-default-rtdb.asia-southeast1.firebasedatabase.app`.",
+      "reason": "The initializer uses `firebaseConfig.databaseURL` to form `${firebaseConfig.databaseURL}/.json`, but the diff excerpt does not show the value of `firebaseConfig.databaseURL`, so preserving/using the exact required URL cannot be confirmed from the diff summary alone.",
+      "evidence": [
+        "frontend/src/lib/telemetryBootstrap.ts (uses `firebaseConfig.databaseURL` to build the request URL)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added documentation text about Arduino UNO GSM/GPRS module GPS and SMS responsibilities including a specific SIM number (9692162224).",
+      "reason": "Not requested by REQ-32/33/34; the requirements only asked for RTDB field schema, root-path behavior, aliases, and a bootstrap action.",
+      "evidence": [
+        "frontend/FIREBASE_RTDB_FIELDS.md (section: “Hardware Integration Note” mentioning SIM 9692162224 and SMS behavior)"
+      ]
+    }
+  ],
+  "confidence": 0.64,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/FIREBASE_RTDB_FIELDS.md",
+    "frontend/src/components/admin/FirebaseTelemetryBootstrapAction.tsx",
+    "frontend/src/lib/telemetryBootstrap.ts",
+    "frontend/src/pages/Dashboard.tsx",
+    "project_state.json"
+  ]
+}
