@@ -1,110 +1,79 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update contact email and add device SMS deep links alongside WhatsApp and tel actions",
+  "title": "Switch officer contact to WhatsApp Calling only (remove SMS and device tel links)",
   "requirements": [
     {
-      "id": "REQ-41",
-      "summary": "Replace the old contact/credits email with the updated email across frontend UI and documentation.",
+      "id": "REQ-45",
+      "summary": "Remove all SMS contact actions and SMS-related UI/error flows so the app no longer offers any “Send SMS” behavior.",
       "acceptanceCriteria": [
-        "Searching the repo for `arinfotech@gmail.com` returns zero matches.",
-        "Searching the repo for `arinfotech1993@gmail.com` returns at least one match in the intended contact/credits location(s).",
-        "All user-facing text remains in English."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/ARDUINO_DEVICE_INTEGRATION.md",
-          "operation": "modify",
-          "description": "Replace any occurrences of `arinfotech@gmail.com` with `arinfotech1993@gmail.com` and ensure surrounding documentation text remains English-only."
-        },
-        {
-          "path": "frontend/PWA_AND_LOCAL_RUN.md",
-          "operation": "modify",
-          "description": "Replace any occurrences of `arinfotech@gmail.com` with `arinfotech1993@gmail.com` and ensure surrounding documentation text remains English-only."
-        },
-        {
-          "path": "frontend/FIREBASE_RTDB_FIELDS.md",
-          "operation": "modify",
-          "description": "Replace any occurrences of `arinfotech@gmail.com` with `arinfotech1993@gmail.com` and ensure surrounding documentation text remains English-only."
-        },
-        {
-          "path": "frontend/src/components/layout/AppLayout.tsx",
-          "operation": "modify",
-          "description": "If the contact/credits email is displayed in the UI footer or layout (or is added there elsewhere), update it to `arinfotech1993@gmail.com` and keep all UI copy in English. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-42",
-      "summary": "Add an SMS (sms:) deep-link action to the Dashboard Officer Messaging card with inline fallback error + one-click copy, while keeping WhatsApp and tel actions unchanged.",
-      "acceptanceCriteria": [
-        "When an officer is selected on the Dashboard, the messaging card shows an action that initiates an `sms:` deep link using the selected officer’s mobile number and the composed message body.",
-        "If the SMS deep link cannot be initiated or fails, the UI shows an inline actionable error state and provides a one-click way to copy the message text (clipboard).",
-        "The WhatsApp action continues to open a WhatsApp chat for the selected officer with the message prefilled.",
-        "The tel: action continues to initiate a phone call from the current device/browser (no implication of Arduino/GSM-module calling)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/sms.ts",
-          "operation": "modify",
-          "description": "Harden SMS deep-link construction and initiation behavior to support a reliable boolean success/failure signal where possible (e.g., environment heuristics) so the UI can show a graceful fallback state when SMS links are unlikely to work."
-        },
-        {
-          "path": "frontend/src/components/messaging/OfficerMessageComposer.tsx",
-          "operation": "modify",
-          "description": "Add a \"Send SMS from This Device\" action that uses the sms deep link with selected officer number + composed message body; add inline error UI with a one-click copy-to-clipboard action when SMS initiation fails/unavailable; preserve existing WhatsApp chat handoff and tel: call action; use shadcn-ui Alert/Button patterns already present for inline states and actions. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-43",
-      "summary": "Add an SMS (sms:) deep-link action to each Officers Directory row with fallback to copying an SMS text payload, without breaking existing actions.",
-      "acceptanceCriteria": [
-        "Each officer row in the Officers list includes an action to initiate an `sms:` deep link to that officer’s mobile number.",
-        "If the SMS deep link cannot be initiated or fails, the UI provides a clear English error message and a one-click copy-to-clipboard option for the SMS text.",
-        "Existing WhatsApp Chat / WhatsApp Call handoff / Call from This Device / Copy Number actions continue to work."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/sms.ts",
-          "operation": "modify",
-          "description": "Add/adjust a small helper to provide a consistent default SMS message payload for directory-initiated SMS actions (used when there is no composed dashboard message context), and reuse the same initiation logic as the dashboard."
-        },
-        {
-          "path": "frontend/src/components/officers/OfficerList.tsx",
-          "operation": "modify",
-          "description": "Add a \"Send SMS from This Device\" action per officer (e.g., in the row actions menu) using the sms deep link; on failure/unavailable show a clear English error (toast and/or inline menu feedback) and provide a one-click copy-to-clipboard option for the SMS text payload; keep existing WhatsApp chat/call, tel:, and copy-number actions working as-is; use shadcn-ui DropdownMenu/Button conventions already in use. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/Officers.tsx",
-          "operation": "modify",
-          "description": "Ensure the Officers Directory page wiring still presents the updated row actions (no orphaned UI) and any additional helper text added for SMS behavior remains English-only. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-44",
-      "summary": "Update help/labels to clearly distinguish WhatsApp handoff vs SMS via device vs calling via device, and avoid implying the web app sends SMS via the Arduino GSM/GPRS module.",
-      "acceptanceCriteria": [
-        "Dashboard and Officers screens contain clear English microcopy indicating SMS and calls are initiated from the user’s current device/browser via `sms:`/`tel:` links.",
-        "No UI copy implies that clicking web buttons will send SMS via the Arduino UNO GSM/GPRS module SIM.",
-        "WhatsApp labeling indicates it opens WhatsApp (Web/app) for the selected officer, depending on the environment and popup-blocker constraints."
+        "In `frontend/src/components/messaging/OfficerMessageComposer.tsx`, the \"Send SMS from This Device\" button is removed and no SMS error state can be triggered.",
+        "In `frontend/src/components/officers/OfficerList.tsx`, the \"Send SMS from This Device\" dropdown action is removed.",
+        "No user-facing text mentions SMS as a supported contact option in the affected components."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/messaging/OfficerMessageComposer.tsx",
           "operation": "modify",
-          "description": "Replace the current Arduino-SMS-implication alert microcopy with clear English text that distinguishes: (a) WhatsApp opens WhatsApp Web/app, (b) SMS opens the user's device SMS app via `sms:` link, (c) Call uses `tel:` link; ensure the copy does not claim the web app sends SMS via Arduino GSM/GPRS module. Use shadcn-ui Alert component already present. Verify the component's usage instructions before implementing."
+          "description": "Remove all SMS functionality: drop `sendSms` import, remove `smsError` state and `handleSendSms`, delete the \"Send SMS from This Device\" button and destructive SMS error Alert block, and update any remaining user-facing text to exclude SMS. Keep the existing copy-to-clipboard flow. Uses shadcn-ui primitives already present (Card/Button/Alert/etc.) for layout and messaging—verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/components/officers/OfficerList.tsx",
           "operation": "modify",
-          "description": "Update action labels and/or supporting text to clearly differentiate WhatsApp handoff vs SMS via `sms:` vs calling via `tel:` (e.g., menu item labels like \"Open WhatsApp Chat (handoff)\" / \"Send SMS from This Device\" / \"Call from This Device\"), and ensure no wording implies Arduino GSM/GPRS module SMS sending. Verify the component's usage instructions before implementing."
+          "description": "Remove SMS action logic and UI: delete `sendSms`/`generateDefaultSmsMessage` imports and handler, and remove the \"Send SMS from This Device\" DropdownMenuItem. Ensure no remaining labels/descriptions mention SMS. Uses shadcn-ui DropdownMenu/Table/Button—verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/Officers.tsx",
           "operation": "modify",
-          "description": "Update the Officers Directory page subtitle/help text to clearly state that SMS and calls are initiated from the user's current device/browser via `sms:`/`tel:` links, and that WhatsApp actions open WhatsApp (Web/app) subject to environment/popup blocker behavior; keep all text in English. Verify the component's usage instructions before implementing."
+          "description": "Update the Officers Directory explanatory text to remove SMS references (and align with WhatsApp handoff-only contact). Keep all user-facing text in English. Uses shadcn-ui Card/Button/Input—verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-46",
+      "summary": "Remove all device-based calling via tel: links and offer officer calling only as a WhatsApp handoff with clear in-app guidance.",
+      "acceptanceCriteria": [
+        "In `frontend/src/components/messaging/OfficerMessageComposer.tsx`, the `tel:` call button/link is removed.",
+        "In `frontend/src/components/officers/OfficerList.tsx`, the `tel:` call action is removed from the actions dropdown.",
+        "The Officers list continues to provide a WhatsApp call option that opens WhatsApp and shows English guidance that the user must start the voice call from within WhatsApp.",
+        "No UI element implies the web app can place a phone call directly from the browser/device using a link."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+          "operation": "modify",
+          "description": "Remove the `tel:` anchor/button (and related Phone icon usage). Replace it with a WhatsApp calling handoff action that opens WhatsApp (via existing WhatsApp helper) and shows English guidance that the user must start the voice call inside WhatsApp. Ensure no copy or help text implies direct browser/device dialing. Uses shadcn-ui Button/Alert components for the action and guidance—verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/officers/OfficerList.tsx",
+          "operation": "modify",
+          "description": "Remove the `tel:` DropdownMenuItem (and related Phone icon usage) from the actions menu. Keep a WhatsApp call option that opens WhatsApp and provides English guidance (e.g., via toast) instructing the user to start the voice call within WhatsApp. Uses shadcn-ui DropdownMenu components—verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Officers.tsx",
+          "operation": "modify",
+          "description": "Ensure any Officers page copy does not mention device calling or `tel:` links and reinforces WhatsApp call handoff only (English text). Uses shadcn-ui typography/layout—verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-47",
+      "summary": "Update the Dashboard Officer Messaging card to prioritize WhatsApp calling handoff while keeping the composed alert payload copy-to-clipboard workflow.",
+      "acceptanceCriteria": [
+        "In `frontend/src/components/messaging/OfficerMessageComposer.tsx`, provide a clear WhatsApp call handoff action (separate from chat if both are kept) that opens WhatsApp for the selected officer and displays English guidance to start the call inside WhatsApp.",
+        "The message text remains copyable via the existing copy action.",
+        "The informational/help text in the card is updated to describe only WhatsApp chat/call handoff and copying the message (no SMS or `tel:` references)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+          "operation": "modify",
+          "description": "Revise the Officer Messaging card CTA area to include a dedicated WhatsApp calling handoff action (distinct from WhatsApp chat if chat remains). Keep the existing copy action unchanged. Update the informational/help Alert text to describe only: WhatsApp chat handoff (optional), WhatsApp call handoff (user starts the voice call inside WhatsApp), and copying the message—removing all SMS and `tel:` references. Uses shadcn-ui Card/Alert/Button primitives already present—verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Dashboard.tsx",
+          "operation": "modify",
+          "description": "If needed after adjusting the composer content/height, make small layout tweaks around the OfficerMessageComposer placement to maintain a clean dashboard layout, without introducing new contact options or any SMS/`tel:` references. Uses existing shadcn-ui layout components—verify the component's usage instructions before implementing."
         }
       ]
     }

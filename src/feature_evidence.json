@@ -2,47 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-dashboard-officer-messaging-card-to-support-sending-the-composed-alert-text-via-the-current-device-s-sms-application-using-an-sms-deep-link-while-preserving-the-existing-whatsapp-web-action-and-tel-calling-action",
-      "featureTitle": "Update the Dashboard \"Officer Messaging\" card to support sending the composed alert text via the current device’s SMS application using an `sms:` deep link, while preserving the existing WhatsApp Web action and tel: calling action.",
-      "files": [
-        "frontend/src/components/messaging/OfficerMessageComposer.tsx",
-        "frontend/src/lib/sms.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-42"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-send-sms-from-this-device-action-to-the-officers-directory-list-actions-for-each-officer-row-using-an-sms-deep-link-include-a-graceful-fallback-to-copying-the-message-payload-if-the-deep-link-cannot-be-opened",
-      "featureTitle": "Add a \"Send SMS from This Device\" action to the Officers Directory list actions for each officer row using an `sms:` deep link; include a graceful fallback to copying the message payload if the deep link cannot be opened.",
-      "files": [
-        "frontend/src/components/officers/OfficerList.tsx",
-        "frontend/src/lib/sms.ts",
-        "frontend/src/pages/Officers.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-43"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-user-facing-help-labels-clearly-distinguish-between-a-whatsapp-web-handoff-b-sms-via-the-user-s-current-device-sms-app-sms-link-and-c-calling-via-the-user-s-current-device-tel-link-without-implying-the-web-app-sends-sms-through-the-arduino-gsm-gprs-module",
-      "featureTitle": "Ensure user-facing help/labels clearly distinguish between (a) WhatsApp Web handoff, (b) SMS via the user’s current device SMS app (`sms:` link), and (c) calling via the user’s current device (`tel:` link), without implying the web app sends SMS through the Arduino GSM/GPRS module.",
+      "featureId": "feature-remove-all-sms-contact-actions-from-the-ui-and-interaction-logic-so-the-app-no-longer-offers-any-send-sms-behavior-anywhere",
+      "featureTitle": "Remove all SMS contact actions from the UI and interaction logic, so the app no longer offers any \"Send SMS\" behavior anywhere.",
       "files": [
         "frontend/src/components/messaging/OfficerMessageComposer.tsx",
         "frontend/src/components/officers/OfficerList.tsx",
@@ -56,7 +17,45 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-44"
+        "REQ-45"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-all-device-based-calling-via-tel-links-from-the-ui-and-ensure-officer-calling-is-offered-only-as-a-whatsapp-calling-handoff-open-whatsapp-then-instruct-the-user-to-start-the-voice-call-inside-whatsapp",
+      "featureTitle": "Remove all device-based calling via `tel:` links from the UI and ensure officer calling is offered only as a WhatsApp Calling handoff (open WhatsApp, then instruct the user to start the voice call inside WhatsApp).",
+      "files": [
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx",
+        "frontend/src/components/officers/OfficerList.tsx",
+        "frontend/src/pages/Officers.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-46"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-dashboard-officer-messaging-card-to-present-whatsapp-calling-as-the-primary-calling-option-while-keeping-a-copy-to-clipboard-workflow-for-the-composed-alert-payload",
+      "featureTitle": "Update the Dashboard Officer Messaging card to present WhatsApp Calling as the primary calling option, while keeping a copy-to-clipboard workflow for the composed alert payload.",
+      "files": [
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-47"
       ],
       "confidence": "high"
     }

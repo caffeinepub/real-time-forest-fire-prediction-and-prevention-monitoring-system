@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Update the app’s contact email everywhere, and restore “send SMS from this device” deep-link actions alongside existing WhatsApp and phone-call actions with clear, accurate labels.
+**Goal:** Ensure officers can be contacted only via a WhatsApp Calling handoff (no SMS actions and no device `tel:` calling links), while keeping the alert message copy-to-clipboard workflow.
 
 **Planned changes:**
-- Replace `arinfotech@gmail.com` with `arinfotech1993@gmail.com` across all frontend UI surfaces and repository documentation references.
-- On the Dashboard “Officer Messaging” card, add/restore an `sms:` deep-link action that opens the current device’s SMS app with the selected officer’s number and the composed message body, while keeping existing WhatsApp and `tel:` actions.
-- Add “Send SMS from This Device” to each officer row in the Officers Directory, using an `sms:` deep link to that officer’s mobile number.
-- Add inline fallback behavior for SMS deep-link failures on Dashboard and Officers screens: show a clear English error state and provide a one-click copy-to-clipboard for the message text.
-- Update help text/labels to clearly distinguish WhatsApp handoff vs SMS via `sms:` link vs calling via `tel:` link, and avoid implying SMS is sent via any Arduino GSM/GPRS module.
+- Remove all SMS-related UI actions and related interaction/error states from the officer messaging composer and officers list actions.
+- Remove all device-based calling via `tel:` links from the officer messaging composer and officers list actions.
+- Update the Dashboard Officer Messaging card to present a WhatsApp call handoff action (open WhatsApp, then guide the user in English to start the voice call inside WhatsApp) and ensure all help text references only WhatsApp handoff and copying the message.
 
-**User-visible outcome:** Users see the updated contact email, can initiate SMS and phone calls from their current device via `sms:`/`tel:` links, and can still hand off messaging to WhatsApp—each option clearly labeled with a copy-message fallback if SMS deep linking can’t be opened.
+**User-visible outcome:** Users can no longer send SMS or place device calls from the app; they can open WhatsApp for an officer and are guided to start the voice call inside WhatsApp, while still being able to copy the composed alert message.

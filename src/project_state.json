@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 27,
-  "summary": "Web app for a real-time forest-fire prediction and prevention monitoring system using Firebase Realtime Database (currently empty/null) with dashboards, maps, reports, officer messaging, and admin login flow.",
+  "projectStateVersion": 29,
+  "summary": "Web app for a real-time forest-fire prediction and prevention monitoring system using Firebase Realtime Database (currently empty/null) with dashboards, maps, reports, officer messaging, and admin login flow; officer contact actions should prioritize WhatsApp Calling (no SMS deep links and no device tel: calling links).",
   "architectural_notes": [
     "Firebase Realtime Database as the real-time data source; must handle empty/null database state gracefully (no data yet).",
     "Sensor inputs expected: temperature, wind, humidity, soil moisture, PIR (human-only intent), flame sensor, MQ2 smoke; GPS lat/long stored for mapping.",
@@ -18,7 +18,8 @@
     "Firebase Realtime Database currently contains null/no data; UI should support empty-state displays and simulated/demo data if needed.",
     "Add Officer form may incorrectly fail for valid officer name/mobile input and/or Firebase write errors; needs validation + error handling fixes.",
     "Officer Messaging UI expectation mismatch: user expects \"Send SMS\" and \"Call Officer\" buttons to send SMS/make calls via the Arduino GSM/GPRS module SIM, but the web app cannot directly trigger the GSM module; UX needs to align with actual capability (copyable payload / tel: link only, or document separate GSM-module-side workflow).",
-    "Messaging requirements may conflict: prior scope states the web app should not send SMS (Arduino GSM module handles SMS), but user requests SMS via device sms: link and via WhatsApp Web; needs reconciliation to avoid inconsistent UX."
+    "Messaging requirements may conflict: prior scope states the web app should not send SMS (Arduino GSM module handles SMS), but user requests SMS via device sms: link and via WhatsApp Web; needs reconciliation to avoid inconsistent UX.",
+    "Requirements change: user requests WhatsApp Calling only and explicitly rejects SMS and device tel: calling links; current planned/implemented contact actions may conflict and need UX alignment."
   ],
   "isFixRequest": false,
   "existing_features": [
@@ -357,6 +358,30 @@
         "REQ-44"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-remove-all-sms-contact-actions-from-the-ui-and-interaction-logic-so-the-app-no-longer-offers-any-send-sms-behavior-anywhere",
+      "title": "Remove all SMS contact actions from the UI and interaction logic, so the app no longer offers any \"Send SMS\" behavior anywhere.",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-all-device-based-calling-via-tel-links-from-the-ui-and-ensure-officer-calling-is-offered-only-as-a-whatsapp-calling-handoff-open-whatsapp-then-instruct-the-user-to-start-the-voice-call-inside-whatsapp",
+      "title": "Remove all device-based calling via `tel:` links from the UI and ensure officer calling is offered only as a WhatsApp Calling handoff (open WhatsApp, then instruct the user to start the voice call inside WhatsApp).",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dashboard-officer-messaging-card-to-present-whatsapp-calling-as-the-primary-calling-option-while-keeping-a-copy-to-clipboard-workflow-for-the-composed-alert-payload",
+      "title": "Update the Dashboard Officer Messaging card to present WhatsApp Calling as the primary calling option, while keeping a copy-to-clipboard workflow for the composed alert payload.",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -483,17 +508,17 @@
       "status": "pending"
     },
     {
-      "id": "AR-21",
-      "summary": "Support sending officer alert text via both WhatsApp Web message deep link and device sms: link (plus tel: calling) so SMS/call can be initiated from the current device",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-22",
       "summary": "Replace the contact/credits email address `arinfotech@gmail.com` with `arinfotech1993@gmail.com` everywhere it is displayed or referenced in the frontend UI and repository documentation.",
       "reqIds": [
         "REQ-41"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Update officer contact actions so calling is done via WhatsApp Calling only; remove/disable SMS sending and device tel: calling link actions in the UI",
+      "reqIds": [],
       "status": "pending"
     }
   ],

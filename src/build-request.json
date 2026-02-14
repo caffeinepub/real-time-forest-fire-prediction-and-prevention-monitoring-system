@@ -1,105 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Update contact email and re-enable device SMS deep link alongside WhatsApp and tel actions",
-  "priority": "normal",
+  "title": "Switch officer contact to WhatsApp Calling only (remove SMS and device tel links)",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-41",
-      "text": "Replace the contact/credits email address `arinfotech@gmail.com` with `arinfotech1993@gmail.com` everywhere it is displayed or referenced in the frontend UI and repository documentation.",
+      "id": "REQ-45",
+      "text": "Remove all SMS contact actions from the UI and interaction logic, so the app no longer offers any \"Send SMS\" behavior anywhere.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-3"
         ],
         "quotes": [
-          "change the mail arinfotech@gmail.com to arinfotech1993@gmail.com"
+          "CALL THE OFFICER THROUGH WHATAPP CALLING DONT USE SMS AND CALL BY USING LINK DEVICE"
         ]
       },
       "acceptanceCriteria": [
-        "Searching the repo for `arinfotech@gmail.com` returns zero matches.",
-        "Searching the repo for `arinfotech1993@gmail.com` returns at least one match in the intended contact/credits location(s).",
-        "All user-facing text remains in English."
+        "In `frontend/src/components/messaging/OfficerMessageComposer.tsx`, the \"Send SMS from This Device\" button is removed and no SMS error state can be triggered.",
+        "In `frontend/src/components/officers/OfficerList.tsx`, the \"Send SMS from This Device\" dropdown action is removed.",
+        "No user-facing text mentions SMS as a supported contact option in the affected components."
       ]
     },
     {
-      "id": "REQ-42",
-      "text": "Update the Dashboard \"Officer Messaging\" card to support sending the composed alert text via the current device’s SMS application using an `sms:` deep link, while preserving the existing WhatsApp Web action and tel: calling action.",
+      "id": "REQ-46",
+      "text": "Remove all device-based calling via `tel:` links from the UI and ensure officer calling is offered only as a WhatsApp Calling handoff (open WhatsApp, then instruct the user to start the voice call inside WhatsApp).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-3"
         ],
         "quotes": [
-          "so that sms and call from this device work smoothly. the sms send througn the web whatapp as well as from this device by mobile link"
+          "CALL THE OFFICER THROUGH WHATAPP CALLING DONT USE SMS AND CALL BY USING LINK DEVICE"
         ]
       },
       "acceptanceCriteria": [
-        "When an officer is selected on the Dashboard, the messaging card shows an action that initiates an `sms:` deep link using the selected officer’s mobile number and the composed message body.",
-        "If the SMS deep link cannot be initiated or fails, the UI shows an inline actionable error state and provides a one-click way to copy the message text (clipboard).",
-        "The WhatsApp action continues to open a WhatsApp chat for the selected officer with the message prefilled.",
-        "The tel: action continues to initiate a phone call from the current device/browser (no implication of Arduino/GSM-module calling)."
+        "In `frontend/src/components/messaging/OfficerMessageComposer.tsx`, the `tel:` call button/link is removed.",
+        "In `frontend/src/components/officers/OfficerList.tsx`, the `tel:` call action is removed from the actions dropdown.",
+        "The Officers list continues to provide a WhatsApp call option that opens WhatsApp and shows English guidance that the user must start the voice call from within WhatsApp.",
+        "No UI element implies the web app can place a phone call directly from the browser/device using a link."
       ]
     },
     {
-      "id": "REQ-43",
-      "text": "Add a \"Send SMS from This Device\" action to the Officers Directory list actions for each officer row using an `sms:` deep link; include a graceful fallback to copying the message payload if the deep link cannot be opened.",
+      "id": "REQ-47",
+      "text": "Update the Dashboard Officer Messaging card to present WhatsApp Calling as the primary calling option, while keeping a copy-to-clipboard workflow for the composed alert payload.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-3"
         ],
         "quotes": [
-          "the sms send througn the web whatapp as well as from this device by mobile link"
+          "CALL THE OFFICER THROUGH WHATAPP CALLING DONT USE SMS AND CALL BY USING LINK DEVICE"
         ]
       },
       "acceptanceCriteria": [
-        "Each officer row in the Officers list includes an action to initiate an `sms:` deep link to that officer’s mobile number.",
-        "If the SMS deep link cannot be initiated or fails, the UI provides a clear English error message and a one-click copy-to-clipboard option for the SMS text.",
-        "Existing WhatsApp Chat / WhatsApp Call handoff / Call from This Device / Copy Number actions continue to work."
-      ]
-    },
-    {
-      "id": "REQ-44",
-      "text": "Ensure user-facing help/labels clearly distinguish between (a) WhatsApp Web handoff, (b) SMS via the user’s current device SMS app (`sms:` link), and (c) calling via the user’s current device (`tel:` link), without implying the web app sends SMS through the Arduino GSM/GPRS module.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "recent-messages-4"
-        ],
-        "quotes": [
-          "so that sms and call from this device work smoothly. the sms send througn the web whatapp as well as from this device by mobile link"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dashboard and Officers screens contain clear English microcopy indicating SMS and calls are initiated from the user’s current device/browser via `sms:`/`tel:` links.",
-        "No UI copy implies that clicking web buttons will send SMS via the Arduino UNO GSM/GPRS module SIM.",
-        "WhatsApp labeling indicates it opens WhatsApp (Web/app) for the selected officer, depending on the environment and popup-blocker constraints."
+        "In `frontend/src/components/messaging/OfficerMessageComposer.tsx`, provide a clear WhatsApp call handoff action (separate from chat if both are kept) that opens WhatsApp for the selected officer and displays English guidance to start the call inside WhatsApp.",
+        "The message text remains copyable via the existing copy action.",
+        "The informational/help text in the card is updated to describe only WhatsApp chat/call handoff and copying the message (no SMS or `tel:` references)."
       ]
     }
   ],
   "constraints": [
-    "Frontend must not modify files under `frontend/src/components/ui` or any paths listed in `frontend.immutablePaths` in SYSTEM_CONTEXT.",
-    "Keep all user-facing text in English.",
-    "Backend remains single-actor Motoko architecture; do not introduce additional backend services.",
-    "Do not add any third-party SMS gateway integration; only use deep links (`sms:`/`tel:`) and WhatsApp Web handoff."
+    "Do not edit any files under `frontend/src/components/ui` or other paths listed in `SYSTEM_CONTEXT.frontend.immutablePaths`.",
+    "Keep all user-facing text in English."
   ],
   "nonGoals": [
-    "Do not implement or claim true SMS delivery from the web app without user interaction (no background SMS sending).",
-    "Do not change Firebase RTDB schema or telemetry subscription behavior as part of this request.",
-    "Do not implement Arduino GSM-module SMS sending logic in the web app (Arduino-side SMS sending remains separate)."
+    "Implementing a direct WhatsApp voice-call deep link (WhatsApp calling must be a handoff flow).",
+    "Sending SMS from the web app or re-adding any `sms:` deep links.",
+    "Placing calls via `tel:` links or any other device dialing link."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Edit, Trash2, Phone, Copy, MessageCircle } from 'lucide-react';
+import { MoreVertical, Edit, Trash2, Copy, PhoneCall } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -11,7 +11,6 @@ import OfficerFormDialog from './OfficerFormDialog';
 import { useDeleteOfficer } from '../../hooks/useOfficers';
 import { copyToClipboard } from '../../lib/clipboard';
 import { openWhatsAppChat } from '../../lib/whatsapp';
-import { sendSms, generateDefaultSmsMessage } from '../../lib/sms';
 
 interface OfficerListProps {
   officers: Officer[];
@@ -55,24 +54,11 @@ export default function OfficerList({ officers, isLoading }: OfficerListProps) {
   const handleWhatsAppCall = async (officer: Officer) => {
     const success = await openWhatsAppChat(officer.mobileNumber);
     if (success) {
-      toast.info('WhatsApp opened. Start the voice call from within WhatsApp.');
+      toast.info('WhatsApp opened. Start the voice call from within WhatsApp.', {
+        duration: 5000,
+      });
     } else {
       toast.error('Could not open WhatsApp. Please check your popup blocker settings.');
-    }
-  };
-
-  const handleSendSms = async (officer: Officer) => {
-    const message = generateDefaultSmsMessage(officer.name);
-    const success = await sendSms(officer.mobileNumber, message);
-    
-    if (!success) {
-      // Show error and offer to copy the message
-      const copySuccess = await copyToClipboard(message);
-      if (copySuccess) {
-        toast.error('Could not open SMS app. Message copied to clipboard - paste it manually in your SMS app.');
-      } else {
-        toast.error('Could not open SMS app. Please try again or use the "Copy Number" option.');
-      }
     }
   };
 
@@ -126,23 +112,13 @@ export default function OfficerList({ officers, isLoading }: OfficerListProps) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleWhatsAppChat(officer)}>
                           <SiWhatsapp className="mr-2 h-4 w-4 text-[#25D366]" />
-                          Open WhatsApp Chat (handoff)
+                          WhatsApp Chat
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleWhatsAppCall(officer)}>
-                          <SiWhatsapp className="mr-2 h-4 w-4 text-[#25D366]" />
+                          <PhoneCall className="mr-2 h-4 w-4 text-[#25D366]" />
                           WhatsApp Call (start inside app)
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleSendSms(officer)}>
-                          <MessageCircle className="mr-2 h-4 w-4" />
-                          Send SMS from This Device
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <a href={`tel:${officer.mobileNumber}`} className="flex items-center gap-2">
-                            <Phone className="h-4 w-4" />
-                            Call from This Device
-                          </a>
-                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleCopyNumber(officer)}>
                           <Copy className="mr-2 h-4 w-4" />
                           Copy Number

@@ -1,46 +1,42 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T18:36:27.285Z",
-  "summary": "Diff adds an SMS deep-link helper (sms:) and wires SMS actions into the Dashboard officer messaging composer and Officers directory list, plus adds microcopy clarifying sms:/tel:/WhatsApp behavior on the Officers page. However, the requested contact email replacement is not evidenced, and the SMS failure/fallback UX appears incomplete because the SMS helper always resolves success, making the specified failure/error flows effectively unreachable.",
+  "generatedAt": "2026-02-13T19:04:33.167Z",
+  "summary": "Diff shows new WhatsApp chat/call handoff handlers and updated Officers page subtitle, but key acceptance-criteria UI removals/updates in OfficerMessageComposer and OfficerList are not fully verifiable due to truncation of the modified sections where buttons/dropdown items and help text would appear.",
   "missing_requirements": [
     {
-      "id": "REQ-41",
-      "requirement": "Replace the contact/credits email address `arinfotech@gmail.com` with `arinfotech1993@gmail.com` everywhere it is displayed or referenced in the frontend UI and repository documentation.",
-      "reason": "No diff evidence shows any email string replacement in UI or documentation; none of the modified file excerpts include either email address.",
+      "id": "REQ-45",
+      "requirement": "Remove all SMS contact actions from the UI and interaction logic, so the app no longer offers any \"Send SMS\" behavior anywhere (including removing the \"Send SMS from This Device\" button/action and preventing any SMS error state).",
+      "reason": "The diffs for the areas where the SMS button/action and any SMS-related state would exist are truncated. In the visible portions, SMS is not referenced, but the actual removal of the \"Send SMS from This Device\" UI elements and any SMS error state cannot be confirmed from the provided diff summary.",
       "evidence": [
-        "frontend-file-summaries.txt",
-        "frontend/src/pages/Officers.tsx",
-        "frontend/src/components/messaging/OfficerMessageComposer.tsx",
-        "frontend/src/components/officers/OfficerList.tsx"
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx (truncated)",
+        "frontend/src/components/officers/OfficerList.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-42",
-      "requirement": "If the SMS deep link cannot be initiated or fails, the Dashboard UI shows an inline actionable error state and provides a one-click way to copy the message text (clipboard).",
-      "reason": "`sendSms` navigates to the `sms:` link and then always resolves `true` after a delay, so the composer’s `if (!success) { ... }` branch (inline error/copy fallback) is unlikely to ever run except on a thrown exception. This makes the specified failure/error handling effectively not implementable as written.",
+      "id": "REQ-46",
+      "requirement": "Remove all device-based calling via `tel:` links from the UI and ensure officer calling is offered only as a WhatsApp Calling handoff (including removing `tel:` actions in OfficerMessageComposer and OfficerList).",
+      "reason": "While the visible code shows WhatsApp call handoff functions that use `openWhatsAppChat(...)` and includes guidance to start the voice call within WhatsApp, the actual UI elements/dropdown items where a `tel:` link/action would be present are in truncated sections. Therefore, complete removal of `tel:` links/actions cannot be verified from the provided diff summary.",
       "evidence": [
-        "frontend/src/lib/sms.ts",
-        "frontend/src/components/messaging/OfficerMessageComposer.tsx"
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx (truncated)",
+        "frontend/src/components/officers/OfficerList.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-43",
-      "requirement": "If the SMS deep link cannot be initiated or fails, the Officers Directory list UI provides a clear English error message and a one-click copy-to-clipboard option for the SMS text.",
-      "reason": "OfficerList does implement a failure path, but it depends on `sendSms` returning `false`. Since `sendSms` always resolves `true` after setting `window.location.href`, the fallback error/copy-to-clipboard flow is effectively unreachable in normal use.",
+      "id": "REQ-47",
+      "requirement": "Update the Dashboard Officer Messaging card to present WhatsApp Calling as the primary calling option, keep copy-to-clipboard workflow, and update informational/help text to describe only WhatsApp chat/call handoff and copying (no SMS or `tel:` references).",
+      "reason": "The visible portion confirms the copy-to-clipboard handler exists and a WhatsApp call handoff handler shows an English guidance toast. However, the messaging card’s actual rendered actions (primary vs secondary) and any informational/help text are in truncated parts, so the required UI presentation and text updates cannot be confirmed.",
       "evidence": [
-        "frontend/src/lib/sms.ts",
-        "frontend/src/components/officers/OfficerList.tsx"
+        "frontend/src/components/messaging/OfficerMessageComposer.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.74,
+  "confidence": 0.58,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/components/messaging/OfficerMessageComposer.tsx",
     "frontend/src/components/officers/OfficerList.tsx",
-    "frontend/src/lib/sms.ts",
     "frontend/src/pages/Officers.tsx",
     "project_state.json"
   ]

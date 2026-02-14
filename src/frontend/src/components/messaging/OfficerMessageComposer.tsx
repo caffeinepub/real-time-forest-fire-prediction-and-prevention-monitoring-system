@@ -4,12 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MessageSquare, Copy, Phone, Check, Info, MessageCircle } from 'lucide-react';
+import { MessageSquare, Copy, Check, Info, PhoneCall } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import { useOfficers } from '../../hooks/useOfficers';
 import { copyToClipboard } from '../../lib/clipboard';
 import { openWhatsAppChat } from '../../lib/whatsapp';
-import { sendSms } from '../../lib/sms';
 import { toast } from 'sonner';
 import type { Telemetry } from '../../types/telemetry';
 import type { AlertStatus } from '../../lib/alertStatus';
@@ -25,7 +24,6 @@ export default function OfficerMessageComposer({ telemetry, alertStatus, demoMod
   const [selectedOfficer, setSelectedOfficer] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [whatsappError, setWhatsappError] = useState(false);
-  const [smsError, setSmsError] = useState(false);
 
   const generateMessage = () => {
     const status = alertStatus.prevention.level === 'critical' ? 'FIRE ALERT' : 
@@ -56,7 +54,7 @@ export default function OfficerMessageComposer({ telemetry, alertStatus, demoMod
     }
   };
 
-  const handleWhatsAppOpen = async () => {
+  const handleWhatsAppChat = async () => {
     if (!selectedOfficerData) return;
     
     setWhatsappError(false);
@@ -67,15 +65,18 @@ export default function OfficerMessageComposer({ telemetry, alertStatus, demoMod
     }
   };
 
-  const handleSendSms = async () => {
+  const handleWhatsAppCall = async () => {
     if (!selectedOfficerData) return;
     
-    setSmsError(false);
-    const success = await sendSms(selectedOfficerData.mobileNumber, message);
+    setWhatsappError(false);
+    const success = await openWhatsAppChat(selectedOfficerData.mobileNumber);
     
-    if (!success) {
-      setSmsError(true);
-      toast.error('Could not open SMS app. Use the copy button to manually send the message.');
+    if (success) {
+      toast.info('WhatsApp opened. Start the voice call from within WhatsApp.', {
+        duration: 5000,
+      });
+    } else {
+      setWhatsappError(true);
     }
   };
 
@@ -117,7 +118,7 @@ export default function OfficerMessageComposer({ telemetry, alertStatus, demoMod
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            <strong>Messaging Options:</strong> WhatsApp opens WhatsApp Web/app with prefilled message. SMS opens your device's SMS app via sms: link. Call uses tel: link to initiate a phone call from your device/browser. The Arduino GSM module (SIM 9692162224) handles device-side SMS alerts independently.
+            <strong>Contact Options:</strong> WhatsApp Chat opens WhatsApp with the prefilled alert message. WhatsApp Call opens WhatsApp where you must start the voice call manually. Copy Message allows you to paste the alert text into any messaging app.
           </AlertDescription>
         </Alert>
 
@@ -129,36 +130,24 @@ export default function OfficerMessageComposer({ telemetry, alertStatus, demoMod
           </Alert>
         )}
 
-        {smsError && (
-          <Alert variant="destructive">
-            <AlertDescription className="flex items-center justify-between">
-              <span>Could not open SMS app. Click "Copy Message" to manually send.</span>
-              <Button size="sm" variant="outline" onClick={handleCopy}>
-                <Copy className="mr-2 h-3 w-3" />
-                Copy
-              </Button>
-            </AlertDescription>
-          </Alert>
-        )}
-
         <div className="flex flex-wrap gap-2">
           <Button 
-            onClick={handleWhatsAppOpen}
+            onClick={handleWhatsAppChat}
             disabled={!selectedOfficerData}
             className="flex-1 gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white"
           >
             <SiWhatsapp className="h-4 w-4" />
-            Open WhatsApp Chat
+            WhatsApp Chat
           </Button>
 
           <Button 
-            onClick={handleSendSms}
+            onClick={handleWhatsAppCall}
             disabled={!selectedOfficerData}
             variant="outline"
             className="flex-1 gap-2"
           >
-            <MessageCircle className="h-4 w-4" />
-            Send SMS from This Device
+            <PhoneCall className="h-4 w-4" />
+            WhatsApp Call
           </Button>
 
           <Button 
@@ -170,19 +159,6 @@ export default function OfficerMessageComposer({ telemetry, alertStatus, demoMod
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied!' : 'Copy Message'}
           </Button>
-          
-          {selectedOfficerData && (
-            <Button
-              variant="outline"
-              asChild
-              className="gap-2"
-            >
-              <a href={`tel:${selectedOfficerData.mobileNumber}`}>
-                <Phone className="h-4 w-4" />
-                Call from This Device
-              </a>
-            </Button>
-          )}
         </div>
 
         {selectedOfficerData && (
